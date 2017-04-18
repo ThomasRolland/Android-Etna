@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_mur"
+            android:icon="@drawable/ic_home_black_24px"
+            android:title="Mur Promotion" />
+        <item
+            android:id="@+id/nav_activites"
+            android:icon="@drawable/ic_class_black_24px"
+            android:title="Activités" />
+        <item
+            android:id="@+id/nav_planning"
+            android:icon="@drawable/ic_today_black_24px"
+            android:title="Planning" />
+        <item
+            android:id="@+id/nav_tickets"
+            android:icon="@drawable/ic_feedback_black_24px"
+            android:title="Tickets" />
+        <item
+            android:id="@+id/nav_notes"
+            android:icon="@drawable/ic_school_black_24px"
+            android:title="Notes" />
+        <item
+            android:id="@+id/nav_badges"
+            android:icon="@drawable/ic_stars_black_24px"
+            android:title="Badges" />
+        <item
+            android:id="@+id/nav_qrcode"
+            android:icon="@drawable/ic_portrait_black_24px"
+            android:title="Ma carte" />
+
+
+
+
+    </group>
+
+
+</menu>
