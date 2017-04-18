@@ -140,11 +140,14 @@ public enum NetworkService implements NetworkInterface {
     }
 
     @Override
-    public String search(String query, String urle, String[] path) {
+    public String search(String[] get, String[] query, String urle, String[] path) {
         Uri.Builder uri = Uri.parse(urle)
                 .buildUpon();
         for (int i = 0; i < path.length ; i++) {
             uri.appendPath(path[i]);
+        }
+        for (int i = 0; i < query.length ; i++) {
+           uri.appendQueryParameter(query[i], get[i]);
         }
         Uri uril  = uri.build();
         URL url = buildURL(uril);

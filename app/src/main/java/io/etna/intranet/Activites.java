@@ -6,9 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,7 +113,6 @@ public class Activites extends Fragment {
         return activites;
     }
 
-
     private String parse(JSONObject resobj)
     {
         Iterator<?> keys = resobj.keys();
@@ -164,7 +161,9 @@ public class Activites extends Fragment {
 
     private JSONObject searchCall() throws JSONException {
         String[] path = {"students", "rollan_t", "currentactivities"};
-        final String data = NetworkService.INSTANCE.search("test", "https://modules-api.etna-alternance.net/", path);
+        String[] get = {};
+        String[] get_data = {};
+        final String data = NetworkService.INSTANCE.search(get, get_data, "https://modules-api.etna-alternance.net/", path);
         return new JSONObject(data);
     }
 }

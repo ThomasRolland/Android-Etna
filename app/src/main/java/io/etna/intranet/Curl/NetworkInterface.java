@@ -25,8 +25,10 @@ public interface NetworkInterface {
 
     /**
      * Search call
+     *
+     * @param get
      * @param query search query
      * @return String
      */
-    String search(String query, String urle, String[] path);
+    String search(String[] get, String[] query, String urle, String[] path);
 }
