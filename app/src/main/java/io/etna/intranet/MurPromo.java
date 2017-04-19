@@ -138,7 +138,6 @@ public class MurPromo extends Fragment {
 
     private String parse(JSONObject resobj)
     {
-
         JSONArray Final_Array = new JSONArray();
             try
             {

@@ -35,7 +35,11 @@ public class BadgeModel {
         return nom;
     }
 
-    public String getImageURL() { return imageURL; }
+    public String getImageURL() {
+        String replacedStr = imageURL.replace("\\", "");
+        //Log.d("url : ", "https://achievements.etna-alternance.net"+replacedStr) ;
+        return "https://achievements.etna-alternance.net"+replacedStr;
+    }
 
 
 }

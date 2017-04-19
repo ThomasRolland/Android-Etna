@@ -36,7 +36,7 @@ public class CustomAdapterTicket extends ArrayAdapter<TicketModel> {
             viewHolder.titre = (TextView) convertView.findViewById(R.id.titre);
             viewHolder.dateCreation = (TextView) convertView.findViewById(R.id.dateCreation);
             viewHolder.dateModification = (TextView) convertView.findViewById(R.id.dateModification);
-            /*viewHolder.dateFermeture = (TextView) convertView.findViewById(R.id.dateFermeture);*/
+            viewHolder.dateFermeture = (TextView) convertView.findViewById(R.id.dateFermeture);
             viewHolder.dernierEditeur = (TextView) convertView.findViewById(R.id.dernierEditeur);
 
             convertView.setTag(viewHolder);
@@ -51,7 +51,7 @@ public class CustomAdapterTicket extends ArrayAdapter<TicketModel> {
         viewHolder.titre.setText(TicketModel.getTitre());
         viewHolder.dateCreation.setText(TicketModel.getDateCreation());
         viewHolder.dateModification.setText(TicketModel.getDateModification());
-        /*viewHolder.dateFermeture.setText(TicketModel.getDateFermeture());*/
+        viewHolder.dateFermeture.setText(TicketModel.getDateFermeture());
         viewHolder.dernierEditeur.setText(TicketModel.getDernierEditeur());
 
         return convertView;

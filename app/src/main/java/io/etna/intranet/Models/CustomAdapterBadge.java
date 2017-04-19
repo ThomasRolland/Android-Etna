@@ -1,8 +1,6 @@
 package io.etna.intranet.Models;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +11,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.List;
 
+import io.etna.intranet.Badges;
+import io.etna.intranet.ImageDownloader.CookieImageDownloader;
 import io.etna.intranet.R;
 
 
@@ -23,6 +22,8 @@ import io.etna.intranet.R;
  * Created by nextjoey on 12/04/2017.
  */
 public class CustomAdapterBadge extends ArrayAdapter<BadgeModel> {
+
+
 
     //BadgeModels est la liste des models à afficher
     public CustomAdapterBadge(Context context, List<BadgeModel> BadgeModels) {
@@ -50,10 +51,16 @@ public class CustomAdapterBadge extends ArrayAdapter<BadgeModel> {
         //il ne reste plus qu'à remplir notre vue
         assert BadgeModel != null;
         viewHolder.nom.setText(BadgeModel.getNom());
-        Picasso.with(getContext()).load(BadgeModel.getImageURL()).into(viewHolder.imageView);
-        {
-            Log.d("A", "Erreur");
-        }
+
+
+
+        Picasso picasso = new Picasso.Builder(getContext()).downloader(new CookieImageDownloader(getContext())).build();
+
+        picasso.load(BadgeModel.getImageURL()).into(viewHolder.imageView);
+         {
+                Log.d("A", "Erreur");
+         }
+
         return convertView;
     }
 
