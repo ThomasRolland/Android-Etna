@@ -136,55 +136,10 @@ public class MurPromo extends Fragment {
         return messages;
     }
 
-    /*private List<ActiviteModel> genererActivites(){
-        List<ActiviteModel> activites = new ArrayList<ActiviteModel>();
-
-        try {
-            JSONArray get_data = new JSONArray(json_string);
-            for(int i = 0; i < get_data.length(); i++) {
-                ArrayList<String> cours = new ArrayList<String>();
-                JSONObject My_data = get_data.getJSONObject(i);
-                String key = "";
-                if (!My_data.isNull("key")){
-                    key = My_data.getString("key");
-                }
-                String name = "";
-                if(!My_data.isNull("name"))
-                {
-                    name = My_data.getString("name");
-                }
-                String date = "";
-                if (!My_data.isNull("date"))
-                {
-                    date = "fin le "+My_data.getString("date");
-                }
-                if (!My_data.isNull("cour"))
-                {
-                    JSONArray cours_array = My_data.getJSONArray("cour");
-                    for(int j = 0; j < cours_array.length(); j++) {
-                        JSONObject cours_object = cours_array.getJSONObject(j);
-                        cours.add(cours_object.getString("name"));
-                        //cours.add(cours_object.getString("id"));
-                    }
-                }
-                activites.add(new ActiviteModel(key, name, date, cours));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return activites;
-    }*/
-
-
     private String parse(JSONObject resobj)
     {
 
-        Iterator<?> keys = resobj.keys();
         JSONArray Final_Array = new JSONArray();
-        while(keys.hasNext())
-        {
-
-            keys.next();
             try
             {
                     JSONArray  hits = resobj.getJSONArray("hits");
@@ -194,7 +149,6 @@ public class MurPromo extends Fragment {
                         JSONObject object3 = hits.getJSONObject(i);
                         Final_Object.put("id", object3.getString("id"));
                         Final_Object.put("title", object3.getString("title"));
-                        Log.d("title", object3.getString("title"));
                         Final_Object.put("date", object3.getString("created_at"));
                         Final_Object.put("message", object3.getJSONObject("last_message").getString("content"));
                         Final_Object.put("id_user", object3.getJSONObject("last_message").getString("user"));
@@ -205,9 +159,6 @@ public class MurPromo extends Fragment {
             {
                 e.printStackTrace();
             }
-
-        }
-        Log.d("toto", String.valueOf(Final_Array));
         return String.valueOf(Final_Array);
     }
 
