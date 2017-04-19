@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +31,6 @@ import io.etna.intranet.Models.CustomAdapterTicketDetails;
 import io.etna.intranet.Models.TicketDetailsModel;
 
 public class TicketsDetails extends Fragment {
-    public String idTicket = getArguments().getString("idTicket");
 
     @Nullable
     @Override
@@ -51,12 +51,13 @@ public class TicketsDetails extends Fragment {
         getActivity().setTitle("Mes Tickets");
 
         /* Récupere les informations (id) de la vue précédente */
+        String idTicket = getArguments().getString("idTicket");
         Log.d("Ticket de la vue chargé : id ", idTicket);
 
         /* Liste d'activités */
         mListView = (ListView) getActivity().findViewById(R.id.flux);
 
-        final List<TicketDetailsModel> Tickets = genererTickets();
+        final List<TicketDetailsModel> Tickets = genererTickets(idTicket);
 
         CustomAdapterTicketDetails adapter = new CustomAdapterTicketDetails(getActivity(), Tickets);
         mListView.setAdapter(adapter);
@@ -65,7 +66,7 @@ public class TicketsDetails extends Fragment {
     }
 
 
-    private List<TicketDetailsModel> genererTickets(){
+    private List<TicketDetailsModel> genererTickets(final String idTicket){
         List<TicketDetailsModel> Tickets = new ArrayList<TicketDetailsModel>();
         String json_string = null;
         //requette
@@ -75,7 +76,7 @@ public class TicketsDetails extends Fragment {
             @Override
             public String call() {
                 try {
-                    data[0] = searchCall();
+                    data[0] = searchCall(idTicket);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -112,31 +113,43 @@ public class TicketsDetails extends Fragment {
         return Tickets;
     }
 
+
+
     private String parse(JSONObject resobj)
     {
+        Iterator<?> keys = resobj.keys();
         JSONArray Final_Array = new JSONArray();
-        try
+        while(keys.hasNext())
         {
-            JSONArray hits = resobj.getJSONArray("data");
-            for(int i = 0; i < hits.length(); i++)
+            JSONObject Final_Object = new JSONObject();
+            String key = (String)keys.next();
+            try
             {
-                JSONObject Final_Object = new JSONObject();
-                JSONObject object3 = hits.getJSONObject(i);
-                Final_Object.put("message", object3.getJSONObject("messages").getString("content"));
-                Final_Object.put("created_at", object3.getJSONObject("messages").getString("created_at"));
-                Final_Object.put("author_login", object3.getJSONObject("messages").getJSONObject("author").getString("login"));
-                Final_Object.put("author_mail", object3.getJSONObject("messages").getJSONObject("author").getString("email"));
-                Final_Array.put(Final_Object);
+                if (resobj.get(key) instanceof JSONObject)
+                {
+                    JSONObject xx = new JSONObject(resobj.get(key).toString());
+                    JSONArray  messages = xx.getJSONArray("messages");
+                    Log.d("messages :", messages.toString());
+                    for(int i = 0; i < messages.length(); i++)
+                    {
+                        JSONObject object3 = messages.getJSONObject(i);
+                        Final_Object.put("message", object3.getString("content"));
+                        Final_Object.put("created_at", object3.getString("created_at"));
+                        Final_Object.put("author_login", object3.getJSONObject("author").getString("login"));
+                        Final_Object.put("author_mail", object3.getJSONObject("author").getString("email"));
+                    }
+                }
             }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            Final_Array.put(Final_Object);
         }
         return String.valueOf(Final_Array);
     }
 
-    private JSONObject searchCall() throws JSONException {
+    private JSONObject searchCall(String idTicket) throws JSONException {
         String[] path = {};
         String[] get = {};
         String[] get_data = {};
