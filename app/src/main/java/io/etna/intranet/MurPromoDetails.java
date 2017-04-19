@@ -134,19 +134,19 @@ public class MurPromoDetails extends Fragment {
 
             for(int i = 0; i < hits.length(); i++)
             {
-                JSONObject Final_Object = new JSONObject();
                 JSONObject object3 = hits.getJSONObject(i);
                 if (object3.getString("id").equals(idPrincipal)) {
                     JSONArray messages = object3.getJSONArray("messages");
                     for(int j = 0; j < messages.length(); j++)
                     {
+                        JSONObject Final_Object = new JSONObject();
                         JSONObject onemessage = messages.getJSONObject(j);
                         Log.d("Message : ", onemessage.toString());
                         Final_Object.put("createur", onemessage.getString("user"));
                         Final_Object.put("date", onemessage.getString("created_at"));
                         Final_Object.put("message", onemessage.getString("content"));
+                        Final_Array.put(Final_Object);
                     }
-                    Final_Array.put(Final_Object);
                 }
             }
         }
