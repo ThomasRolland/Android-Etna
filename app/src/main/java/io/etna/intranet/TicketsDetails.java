@@ -114,40 +114,32 @@ public class TicketsDetails extends Fragment {
     }
 
 
-
     private String parse(JSONObject resobj)
     {
-        Iterator<?> keys = resobj.keys();
         JSONArray Final_Array = new JSONArray();
-        while(keys.hasNext())
+        try
         {
-            JSONObject Final_Object = new JSONObject();
-            String key = (String)keys.next();
-            try
+            JSONArray hits = resobj.getJSONObject("data").getJSONArray("messages");
+            for(int i = 0; i < hits.length(); i++)
             {
-                if (resobj.get(key) instanceof JSONObject)
-                {
-                    JSONObject xx = new JSONObject(resobj.get(key).toString());
-                    JSONArray  messages = xx.getJSONArray("messages");
-                    Log.d("messages :", messages.toString());
-                    for(int i = 0; i < messages.length(); i++)
-                    {
-                        JSONObject object3 = messages.getJSONObject(i);
-                        Final_Object.put("message", object3.getString("content"));
-                        Final_Object.put("created_at", object3.getString("created_at"));
-                        Final_Object.put("author_login", object3.getJSONObject("author").getString("login"));
-                        Final_Object.put("author_mail", object3.getJSONObject("author").getString("email"));
-                    }
-                }
+                JSONObject Final_Object = new JSONObject();
+                JSONObject object3 = hits.getJSONObject(i);
+                Final_Object.put("message", object3.getString("content"));
+                Final_Object.put("created_at", object3.getString("created_at"));
+                Final_Object.put("author_login", object3.getJSONObject("author").getString("login"));
+                Final_Object.put("author_mail", object3.getJSONObject("author").getString("email"));
+                Final_Array.put(Final_Object);
             }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-            Final_Array.put(Final_Object);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
         }
         return String.valueOf(Final_Array);
     }
+
+
+
 
     private JSONObject searchCall(String idTicket) throws JSONException {
         String[] path = {};

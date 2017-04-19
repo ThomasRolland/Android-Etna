@@ -139,10 +139,10 @@ public class Tickets extends Fragment {
                 JSONObject object3 = hits.getJSONObject(i);
                 Log.d("state : ", object3.getString("closed_at"));
                 if (object3.getString("closed_at") == "null") {
-                    Final_Object.put("state", "Fermé");
+                    Final_Object.put("state", "Ouvert");
                 }
                 else {
-                    Final_Object.put("state", "Ouvert");
+                    Final_Object.put("state", "Fermé");
                 }
                     Final_Object.put("id", object3.getString("id"));
                     Final_Object.put("title", object3.getString("title"));

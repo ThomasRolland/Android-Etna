@@ -13,9 +13,19 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.CustomAdapterMur;
 import io.etna.intranet.Models.CustomAdapterMurDetails;
 import io.etna.intranet.Models.MurDetailsModel;
@@ -61,18 +71,98 @@ public class MurPromoDetails extends Fragment {
         /* Liste des messages du mur */
         mListView = (ListView) getActivity().findViewById(R.id.flux);
 
-        List<MurDetailsModel> messages = genererMur();
+        List<MurDetailsModel> messages = genererMur(idPrincipal);
 
         CustomAdapterMurDetails adapter = new CustomAdapterMurDetails(getActivity() , messages);
         mListView.setAdapter(adapter);
     }
 
-    private List<MurDetailsModel> genererMur(){
-        List<MurDetailsModel> messages = new ArrayList<MurDetailsModel>();
 
-        messages.add(new MurDetailsModel("87265", "bedmin_j", "10/04/2017", "Merci."));
+    private List<MurDetailsModel> genererMur(final String idPrincipal){
+        List<MurDetailsModel> messages = new ArrayList<MurDetailsModel>();
+        String json_string = null;
+        //requette
+        final JSONObject[] data = new JSONObject[1];
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() {
+                try {
+                    data[0] = searchCall();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return String.valueOf(parse(data[0], idPrincipal));
+            }
+        };
+        Future<String> future = executor.submit(callable);
+        try {
+            json_string = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        JSONArray get_data = null;
+        try {
+            get_data = new JSONArray(json_string);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        for(int i = 0; i < get_data.length(); i++) {
+            JSONObject My_data = null;
+            try {
+                My_data = get_data.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                messages.add(new MurDetailsModel("", My_data.getString("createur"), My_data.getString("date"), My_data.getString("message")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         return messages;
+    }
+
+    private String parse(JSONObject resobj, String idPrincipal)
+    {
+        JSONArray Final_Array = new JSONArray();
+        try
+        {
+            JSONArray  hits = resobj.getJSONArray("hits");
+
+            for(int i = 0; i < hits.length(); i++)
+            {
+                JSONObject Final_Object = new JSONObject();
+                JSONObject object3 = hits.getJSONObject(i);
+                if (object3.getString("id").equals(idPrincipal)) {
+                    JSONArray messages = object3.getJSONArray("messages");
+                    for(int j = 0; j < messages.length(); j++)
+                    {
+                        JSONObject onemessage = messages.getJSONObject(j);
+                        Log.d("Message : ", onemessage.toString());
+                        Final_Object.put("createur", onemessage.getString("user"));
+                        Final_Object.put("date", onemessage.getString("created_at"));
+                        Final_Object.put("message", onemessage.getString("content"));
+                    }
+                    Final_Array.put(Final_Object);
+                }
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return String.valueOf(Final_Array);
+    }
+
+    private JSONObject searchCall() throws JSONException {
+        String[] path = {"terms", "Prep'ETNA2 - 2020", "conversations"};
+        String[] get = {"0" , "50"};
+        String[] get_data = {"from" , "size"};
+        final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);
+        return new JSONObject(data);
     }
 
 }

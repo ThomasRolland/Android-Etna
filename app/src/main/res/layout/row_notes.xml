@@ -16,12 +16,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
+            android:paddingBottom="10dp"
             android:paddingLeft="25dp"
             android:paddingTop="10dp">
 
             <TextView
                 android:id="@+id/UVnom"
-                android:layout_width="173dp"
+                android:layout_width="94dp"
                 android:layout_height="wrap_content"
                 android:text="FDI-COBJ"
                 android:textColor="@color/Black_Material"
@@ -33,7 +34,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingRight="10dp"
                 android:text="Fondamentaux de C++"
+                android:textAlignment="textEnd"
                 android:textColor="@color/Black_Material" />
         </LinearLayout>
 
@@ -59,8 +62,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingRight="10dp"
                 android:text="16"
-                android:textAlignment="textStart"
+                android:textAlignment="textEnd"
                 android:textColor="@color/Black_Material"
                 android:textSize="16sp"
                 android:textStyle="bold" />
