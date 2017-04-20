@@ -25,14 +25,13 @@ import java.util.concurrent.Future;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterActivite;
+import io.etna.intranet.Storage.TinyDB;
 
 public class Activites extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //returning our layout file
-        //change R.layout.yourlayoutfilename for each of your fragments
         return inflater.inflate(R.layout.fragment_menu_activites, container, false);
     }
 
@@ -41,23 +40,16 @@ public class Activites extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Activités");
-
           /* Liste d'activités */
         mListView = (ListView) getActivity().findViewById(R.id.flux);
-
         List<ActiviteModel> activites = genererActivites();
-
         CustomAdapterActivite adapter = new CustomAdapterActivite(getActivity(), activites);
         mListView.setAdapter(adapter);
-
     }
     private List<ActiviteModel> genererActivites(){
         List<ActiviteModel> activites = new ArrayList<ActiviteModel>();
         String json_string = null;
-        //requette
         final JSONObject[] data = new JSONObject[1];
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Callable<String> callable = new Callable<String>() {
@@ -79,7 +71,6 @@ public class Activites extends Fragment {
         }
         executor.shutdown();
         try {
-            Log.d("test", json_string);
             JSONArray get_data = new JSONArray(json_string);
             for(int i = 0; i < get_data.length(); i++) {
                 ArrayList<String> cours = new ArrayList<String>();
@@ -104,7 +95,6 @@ public class Activites extends Fragment {
                     for(int j = 0; j < cours_array.length(); j++) {
                         JSONObject cours_object = cours_array.getJSONObject(j);
                         cours.add(cours_object.getString("name"));
-                        /*cours.add(cours_object.getString("id"));*/
                     }
                 }
                 activites.add(new ActiviteModel(key, name, date, cours));
@@ -162,7 +152,8 @@ public class Activites extends Fragment {
     }
 
     private JSONObject searchCall() throws JSONException {
-        String[] path = {"students", "rollan_t", "currentactivities"};
+        TinyDB tinydb = new TinyDB(getContext());
+        String[] path = {"students", tinydb.getString("userName"), "currentactivities"};
         String[] get = {};
         String[] get_data = {};
         final String data = NetworkService.INSTANCE.search(get, get_data, "https://modules-api.etna-alternance.net/", path);

@@ -3,13 +3,10 @@ package io.etna.intranet;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.json.JSONArray;
@@ -17,7 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -26,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.CustomAdapterTicket;
 import io.etna.intranet.Models.CustomAdapterTicketDetails;
 import io.etna.intranet.Models.TicketDetailsModel;
 

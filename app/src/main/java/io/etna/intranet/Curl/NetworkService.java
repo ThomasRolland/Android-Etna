@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.etna.intranet.Storage.TinyDB;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -47,10 +48,6 @@ public enum NetworkService implements NetworkInterface {
         @Override
         public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
             cookieStore.put("etna", cookies);
-            Log.d("cookie stored", String.valueOf(cookies));
-            Log.d("cookie url", url.host());
-            Log.d("cookie url", String.valueOf(cookieStore.get("etna")));
-
         }
 
         @Override

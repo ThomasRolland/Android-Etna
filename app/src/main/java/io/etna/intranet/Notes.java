@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.CustomAdapterNote;
 import io.etna.intranet.Models.NoteModel;
+import io.etna.intranet.Storage.TinyDB;
 
 public class Notes extends Fragment {
 
@@ -129,11 +130,11 @@ public class Notes extends Fragment {
     }
 
     private JSONArray searchCall() throws JSONException {
-        String[] path = {"terms", "205", "students", "bedmin_j", "marks"};
+        TinyDB tinydb = new TinyDB(getContext());
+        String[] path = {"terms", tinydb.getString("userIdPromo"), "students", tinydb.getString("userName"), "marks"};
         String[] get = {};
         String[] get_data = {};
         final String data = NetworkService.INSTANCE.search(get, get_data,"\n" + "https://prepintra-api.etna-alternance.net/", path);
-        Log.d("Tickets", data);
         return new JSONArray(data);
     }
 

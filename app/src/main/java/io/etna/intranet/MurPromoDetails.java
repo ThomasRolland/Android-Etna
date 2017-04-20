@@ -3,13 +3,10 @@ package io.etna.intranet;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,10 +23,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.CustomAdapterMur;
 import io.etna.intranet.Models.CustomAdapterMurDetails;
 import io.etna.intranet.Models.MurDetailsModel;
-import io.etna.intranet.Models.MurModel;
+import io.etna.intranet.Storage.TinyDB;
 
 public class MurPromoDetails extends Fragment {
 
@@ -158,7 +154,8 @@ public class MurPromoDetails extends Fragment {
     }
 
     private JSONObject searchCall() throws JSONException {
-        String[] path = {"terms", "Prep'ETNA2 - 2020", "conversations"};
+        TinyDB tinydb = new TinyDB(getContext());
+        String[] path = {"terms", tinydb.getString("userPromoName"),"conversations"};
         String[] get = {"0" , "8"};
         String[] get_data = {"from" , "size"};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);

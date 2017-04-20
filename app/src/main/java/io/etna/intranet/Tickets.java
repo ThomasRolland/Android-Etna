@@ -137,7 +137,6 @@ public class Tickets extends Fragment {
             {
                 JSONObject Final_Object = new JSONObject();
                 JSONObject object3 = hits.getJSONObject(i);
-                Log.d("state : ", object3.getString("closed_at"));
                 if (object3.getString("closed_at") == "null") {
                     Final_Object.put("state", "Ouvert");
                 }
@@ -150,7 +149,6 @@ public class Tickets extends Fragment {
                     Final_Object.put("updated_at", object3.getString("updated_at"));
                     Final_Object.put("last_editor", object3.getJSONObject("last_edit").getString("login"));
                     Final_Array.put(Final_Object);
-
             }
         }
         catch (JSONException e)
@@ -165,7 +163,6 @@ public class Tickets extends Fragment {
         String[] get = {};
         String[] get_data = {};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://tickets.etna-alternance.net/api/tasks.json", path);
-        Log.d("Tickets", data);
         return new JSONObject(data);
     }
 

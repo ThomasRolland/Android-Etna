@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import io.etna.intranet.Storage.TinyDB;
+
 public class QRCode extends Fragment {
     Bitmap image;
     GenerateQRCode qrcode;
@@ -32,7 +34,8 @@ public class QRCode extends Fragment {
         getActivity().setTitle("Mon QR Code");
 
         /*QR Code generator*/
-        qrcode = new GenerateQRCode("bedmin_j|07934|205");
+        TinyDB tinydb = new TinyDB(getContext());
+        qrcode = new GenerateQRCode(tinydb.getString("userName")+"|"+tinydb.getString("userId")+"|"+tinydb.getString("userIdPromo"));
         ImageView img = (ImageView) getActivity().findViewById(R.id.qrcode);
         img.setImageBitmap(qrcode.getQRCode());
 

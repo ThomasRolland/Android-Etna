@@ -4,42 +4,25 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.etna.intranet.Curl.NetworkService;
-
-import static android.Manifest.permission.READ_CONTACTS;
+import io.etna.intranet.Storage.TinyDB;
 
 /**
  * A login screen that offers login via email/password.
@@ -55,9 +38,7 @@ public class LoginActivity extends AppCompatActivity {
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -97,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
     }
 
 
@@ -210,10 +192,22 @@ public class LoginActivity extends AppCompatActivity {
         return new JSONObject(data);
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
+    private JSONObject searchCall_user(String id) throws JSONException {
+        String[] path = {"api", "users", id};
+        String[] get = {};
+        String[] get_data = {};
+        final String data = NetworkService.INSTANCE.search(get, get_data,"https://auth.etna-alternance.net/", path);
+        return new JSONObject(data);
+    }
+
+    private JSONArray searchCall_promo() throws JSONException {
+        String[] path = {};
+        String[] get = {};
+        String[] get_data = {};
+        final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/promo", path);
+        return new JSONArray(data);
+    }
+
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
@@ -231,14 +225,22 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 JSONObject object = searchCall(mEmail, mPassword);
                 if (object.has("id") && !object.isNull("id")) {
-                    Thread.sleep(2000);
+                    //Login succes
+                    TinyDB tinydb = new TinyDB(getApplicationContext());
+                    tinydb.putString("userName", object.getString("login"));
+                    JSONObject data_user = searchCall_user(object.getString("id"));
+                    tinydb.putString("userId", data_user.getString("id"));
+                    tinydb.putString("userFirstname", data_user.getString("firstname"));
+                    tinydb.putString("userLastname", data_user.getString("lastname"));
+                    JSONArray data_promo = searchCall_promo();
+                    tinydb.putString("userIdPromo", data_promo.getJSONObject(0).getString("id"));
+                    tinydb.putString("userPromoName", data_promo.getJSONObject(0).getString("wall_name"));
+
                     return true;
                 }else
                 {
                     return false;
                 }
-            } catch (InterruptedException e) {
-                return false;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -254,10 +256,8 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                //finish();
-                Log.d("OK", "OK");
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(myIntent);
+                startActivity(myIntent);
             } else {
                 mPasswordView.setError("Echec de l'authentification.");
                 mPasswordView.requestFocus();
@@ -270,5 +270,6 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
+
 }
 

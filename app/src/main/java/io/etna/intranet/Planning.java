@@ -3,7 +3,6 @@ package io.etna.intranet;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +27,7 @@ import java.util.concurrent.Future;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.CustomAdapterEvent;
 import io.etna.intranet.Models.EventModel;
+import io.etna.intranet.Storage.TinyDB;
 
 public class Planning extends Fragment {
 
@@ -147,7 +147,8 @@ public class Planning extends Fragment {
         String endDatestr = formater.format(endDate);
 
         /* Appel*/
-        String[] path = {"students", "rollan_t", "events"};
+        TinyDB tinydb = new TinyDB(getContext());
+        String[] path = {"students", tinydb.getString("userName"), "events"};
         String[] get = {endDatestr , startDatestr};
         String[] get_data = {"end" , "start"};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);

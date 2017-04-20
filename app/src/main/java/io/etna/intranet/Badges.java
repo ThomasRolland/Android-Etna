@@ -7,10 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListView;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +24,7 @@ import java.util.concurrent.Future;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.BadgeModel;
 import io.etna.intranet.Models.CustomAdapterBadge;
+import io.etna.intranet.Storage.TinyDB;
 
 public class Badges extends Fragment {
 
@@ -126,7 +124,8 @@ public class Badges extends Fragment {
     }
 
     private JSONArray searchCall() throws JSONException {
-        String[] path = {"api", "users", "bedmin_j", "achievements"};
+        TinyDB tinydb = new TinyDB(getContext());
+        String[] path = {"api", "users", tinydb.getString("userName"), "achievements"};
         String[] get = {};
         String[] get_data = {};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://achievements.etna-alternance.net/", path);

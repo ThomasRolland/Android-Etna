@@ -33,6 +33,7 @@ import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterActivite;
 import io.etna.intranet.Models.CustomAdapterMur;
 import io.etna.intranet.Models.MurModel;
+import io.etna.intranet.Storage.TinyDB;
 
 public class MurPromo extends Fragment {
 
@@ -162,7 +163,8 @@ public class MurPromo extends Fragment {
     }
 
     private JSONObject searchCall() throws JSONException {
-        String[] path = {"terms", "Prep'ETNA2 - 2020", "conversations"};
+        TinyDB tinydb = new TinyDB(getContext());
+        String[] path = {"terms", tinydb.getString("userPromoName"),"conversations"};
         String[] get = {"0" , "8"};
         String[] get_data = {"from" , "size"};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);
