@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -35,74 +36,106 @@ public class Activites extends Fragment {
         return inflater.inflate(R.layout.fragment_menu_activites, container, false);
     }
 
-    ListView mListView;
+    private ListView listView;
+    private ArrayList<ActiviteModel> list;
+    private CustomAdapterActivite adapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Activités");
-          /* Liste d'activités */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
-        List<ActiviteModel> activites = genererActivites();
-        CustomAdapterActivite adapter = new CustomAdapterActivite(getActivity(), activites);
-        mListView.setAdapter(adapter);
+
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterActivite(getContext(), list);
+
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new GetDataTask().execute();
+
     }
-    private List<ActiviteModel> genererActivites(){
-        List<ActiviteModel> activites = new ArrayList<ActiviteModel>();
-        String json_string = null;
-        final JSONObject[] data = new JSONObject[1];
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<String> callable = new Callable<String>() {
-            @Override
-            public String call() {
-                try {
-                    data[0] = searchCall();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return String.valueOf(parse(data[0]));
-            }
-        };
-        Future<String> future = executor.submit(callable);
-        try {
-            json_string = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+
+
+    class GetDataTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /**
+             * Progress Dialog for User Interaction
+             */
+
         }
-        executor.shutdown();
-        try {
-            JSONArray get_data = new JSONArray(json_string);
-            for(int i = 0; i < get_data.length(); i++) {
-                ArrayList<String> cours = new ArrayList<String>();
-                JSONObject My_data = get_data.getJSONObject(i);
-                String key = "";
-                if (!My_data.isNull("key")){
-                    key = My_data.getString("key");
-                }
-                String name = "";
-                if(!My_data.isNull("name"))
-                {
-                    name = My_data.getString("name");
-                }
-                String date = "";
-                if (!My_data.isNull("date"))
-                {
-                    date = "fin le "+My_data.getString("date");
-                }
-                if (!My_data.isNull("cour"))
-                {
-                    JSONArray cours_array = My_data.getJSONArray("cour");
-                    for(int j = 0; j < cours_array.length(); j++) {
-                        JSONObject cours_object = cours_array.getJSONObject(j);
-                        cours.add(cours_object.getString("name"));
+
+        @Nullable
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            /**
+             * Getting JSON Object from Web Using okHttp
+             */
+            String json_string = null;
+            final JSONObject[] data = new JSONObject[1];
+            try {
+                data[0] = searchCall();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            json_string = parse(data[0]);
+            try {
+                JSONArray get_data = new JSONArray(json_string);
+                for (int i = 0; i < get_data.length(); i++) {
+
+                    ArrayList<String> cours = new ArrayList<String>();
+                    JSONObject My_data = get_data.getJSONObject(i);
+                    String key = "";
+                    if (!My_data.isNull("key")) {
+                        key = My_data.getString("key");
                     }
+                    String name = "";
+                    if (!My_data.isNull("name")) {
+                        name = My_data.getString("name");
+                    }
+                    String date = "";
+                    if (!My_data.isNull("date")) {
+                        date = "fin le " + My_data.getString("date");
+                    }
+                    if (!My_data.isNull("cour")) {
+                        JSONArray cours_array = My_data.getJSONArray("cour");
+                        for (int j = 0; j < cours_array.length(); j++) {
+                            JSONObject cours_object = cours_array.getJSONObject(j);
+                            cours.add(cours_object.getString("name"));
+                        }
+                    }
+                    ActiviteModel model = new ActiviteModel(key, name, date, cours);
+                    list.add(model);
+                    //activites.add(new ActiviteModel(key, name, date, cours));
                 }
-                activites.add(new ActiviteModel(key, name, date, cours));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            return null;
         }
-        return activites;
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            /**
+             * Checking if List size if more than zero then
+             * Update ListView
+             */
+            if(list.size() > 0) {
+                adapter.notifyDataSetChanged();
+            } else {
+                Log.d("fail", "fail");
+            }
+        }
     }
 
     private String parse(JSONObject resobj)

@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.etna.intranet.Curl.NetworkService;
+import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.BadgeModel;
 import io.etna.intranet.Models.CustomAdapterBadge;
 import io.etna.intranet.Storage.TinyDB;
@@ -60,25 +62,13 @@ public class Badges extends Fragment {
         String json_string = null;
         //requette
         final JSONArray[] data = new JSONArray[1];
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<String> callable = new Callable<String>() {
-            @Override
-            public String call() {
-                try {
-                    data[0] = searchCall();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return String.valueOf(parse(data[0]));
-            }
-        };
-        Future<String> future = executor.submit(callable);
         try {
-            json_string = future.get();
-        } catch (InterruptedException | ExecutionException e) {
+            data[0] = searchCall();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        executor.shutdown();
+
+        json_string = parse(data[0]);
         JSONArray get_data = null;
         try {
             get_data = new JSONArray(json_string);
@@ -100,6 +90,75 @@ public class Badges extends Fragment {
         }
 
         return Badges;
+    }
+
+    class GetDataTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /**
+             * Progress Dialog for User Interaction
+             */
+
+        }
+
+        @Nullable
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            /**
+             * Getting JSON Object from Web Using okHttp
+             */
+            List<BadgeModel> Badges = new ArrayList<BadgeModel>();
+            String json_string = null;
+            //requette
+            final JSONArray[] data = new JSONArray[1];
+            try {
+                data[0] = searchCall();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            json_string = parse(data[0]);
+            JSONArray get_data = null;
+            try {
+                get_data = new JSONArray(json_string);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            for(int i = 0; i < get_data.length(); i++) {
+                JSONObject My_data = null;
+                try {
+                    My_data = get_data.getJSONObject(i);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    //ActiviteModel model = new ActiviteModel(key, name, date, cours);
+                    Badges.add(new BadgeModel(My_data.getString("name"), My_data.getString("image")));
+                    list.add(model);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            /**
+             * Checking if List size if more than zero then
+             * Update ListView
+             */
+            if(list.size() > 0) {
+                adapter.notifyDataSetChanged();
+            } else {
+                Log.d("fail", "fail");
+            }
+        }
     }
 
     private String parse(JSONArray resobj)
