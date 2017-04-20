@@ -12,23 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterTicket;
 import io.etna.intranet.Models.TicketModel;
+import io.etna.intranet.Parse.JSONParse;
 
 public class Tickets extends Fragment {
 
@@ -41,7 +33,9 @@ public class Tickets extends Fragment {
     }
 
 
-    ListView mListView;
+    private ListView listView;
+    private ArrayList<TicketModel> list;
+    private CustomAdapterTicket adapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -50,21 +44,26 @@ public class Tickets extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mes Tickets");
 
-          /* Liste d'activités */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterTicket(getContext(), list);
 
-        final List<TicketModel> Tickets = genererTickets();
-
-        CustomAdapterTicket adapter = new CustomAdapterTicket(getActivity(), Tickets);
-        mListView.setAdapter(adapter);
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new Tickets.GetDataTask().execute();
 
         /* Passer au fragment détail : voir un ticket */
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 /*Sauvegarde les values a passer*/
                 Bundle bundle = new Bundle();
-                String idPrincipal = Tickets.get(position).getTicketId();
+                String idPrincipal = list.get(position).getTicketId();
                 bundle.putString("idTicket",idPrincipal);
 
                 /*Change de fragment*/
@@ -98,10 +97,13 @@ public class Tickets extends Fragment {
             String json_string = null;
             //requette
             final JSONObject[] data = new JSONObject[1];
-                        data[0] = searchCall();
-                    return String.valueOf();
+            try {
+                data[0] = searchCall();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-                json_string = parse(data[0]);
+            json_string = JSONParse.parseTickets(data[0]);
             JSONArray get_data = null;
             try {
                 get_data = new JSONArray(json_string);
@@ -116,8 +118,7 @@ public class Tickets extends Fragment {
                     e.printStackTrace();
                 }
                 try {
-                    //ici
-                    Tickets.add(new TicketModel(My_data.getString("id"), My_data.getString("title"), "Créé le : "+My_data.getString("created_at"), My_data.getString("updated_at"), My_data.getString("state"), My_data.getString("last_editor")));
+                    TicketModel model = new TicketModel(My_data.getString("id"), My_data.getString("title"), "Créé le : "+My_data.getString("created_at"), My_data.getString("updated_at"), My_data.getString("state"), My_data.getString("last_editor"));
                     list.add(model);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -140,37 +141,6 @@ public class Tickets extends Fragment {
                 Log.d("fail", "fail");
             }
         }
-    }
-
-    private String parse(JSONObject resobj)
-    {
-        JSONArray Final_Array = new JSONArray();
-        try
-        {
-            JSONArray hits = resobj.getJSONArray("data");
-            for(int i = 0; i < hits.length(); i++)
-            {
-                JSONObject Final_Object = new JSONObject();
-                JSONObject object3 = hits.getJSONObject(i);
-                if (object3.getString("closed_at") == "null") {
-                    Final_Object.put("state", "Ouvert");
-                }
-                else {
-                    Final_Object.put("state", "Fermé");
-                }
-                    Final_Object.put("id", object3.getString("id"));
-                    Final_Object.put("title", object3.getString("title"));
-                    Final_Object.put("created_at", object3.getString("created_at"));
-                    Final_Object.put("updated_at", object3.getString("updated_at"));
-                    Final_Object.put("last_editor", object3.getJSONObject("last_edit").getString("login"));
-                    Final_Array.put(Final_Object);
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return String.valueOf(Final_Array);
     }
 
     private JSONObject searchCall() throws JSONException {

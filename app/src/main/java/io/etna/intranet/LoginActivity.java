@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,7 +17,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,11 +82,6 @@ public class LoginActivity extends AppCompatActivity {
         TinyDB tinydb = new TinyDB(getApplicationContext());
         mEmailView.setText(tinydb.getString("loginStored"));
     }
-
-
-
-
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -229,6 +224,7 @@ public class LoginActivity extends AppCompatActivity {
                 //Success ou pas, on sauvegarde son login pour qu'il se recconecte facilement ultérieurement
                 TinyDB tinydb = new TinyDB(getApplicationContext());
                 tinydb.putString("loginStored", object.getString("login"));
+                Log.d("object: ", object.toString());
 
                 //On verifie si l'auth a réussi :
                 if (object.has("id") && !object.isNull("id")) {

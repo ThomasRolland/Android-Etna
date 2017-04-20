@@ -9,23 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterTicketDetails;
 import io.etna.intranet.Models.TicketDetailsModel;
+import io.etna.intranet.Parse.JSONParse;
 
 public class TicketsDetails extends Fragment {
 
@@ -38,7 +30,10 @@ public class TicketsDetails extends Fragment {
     }
 
 
-    ListView mListView;
+    private ListView listView;
+    private ArrayList<TicketDetailsModel> list;
+    private CustomAdapterTicketDetails adapter;
+    public String idTicket = new String();
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -48,16 +43,22 @@ public class TicketsDetails extends Fragment {
         getActivity().setTitle("Mes Tickets");
 
         /* Récupere les informations (id) de la vue précédente */
-        String idTicket = getArguments().getString("idTicket");
+        idTicket = getArguments().getString("idTicket");
         Log.d("Ticket de la vue chargé : id ", idTicket);
 
-        /* Liste d'activités */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
 
-        final List<TicketDetailsModel> Tickets = genererTickets(idTicket);
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterTicketDetails(getContext(), list);
 
-        CustomAdapterTicketDetails adapter = new CustomAdapterTicketDetails(getActivity(), Tickets);
-        mListView.setAdapter(adapter);
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new TicketsDetails.GetDataTask().execute();
 
 
     }
@@ -84,9 +85,13 @@ public class TicketsDetails extends Fragment {
             String json_string = null;
             //requette
             final JSONObject[] data = new JSONObject[1];
-                        data[0] = searchCall(idTicket);
+            try {
+                data[0] = searchCall(idTicket);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-                json_string = parse(data[0]);
+            json_string = JSONParse.parseTicketsDetails(data[0]);
             JSONArray get_data = null;
             try {
                 get_data = new JSONArray(json_string);
@@ -101,8 +106,7 @@ public class TicketsDetails extends Fragment {
                     e.printStackTrace();
                 }
                 try {
-                    //ici
-                    Tickets.add(new TicketDetailsModel(My_data.getString("message"), "Le : "+My_data.getString("created_at"), My_data.getString("author_login"), My_data.getString("author_mail")));
+                    TicketDetailsModel model = new TicketDetailsModel(My_data.getString("message"), "Le : "+My_data.getString("created_at"), My_data.getString("author_login"), My_data.getString("author_mail"));
                     list.add(model);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -126,34 +130,6 @@ public class TicketsDetails extends Fragment {
             }
         }
     }
-
-
-    private String parse(JSONObject resobj)
-    {
-        JSONArray Final_Array = new JSONArray();
-        try
-        {
-            JSONArray hits = resobj.getJSONObject("data").getJSONArray("messages");
-            for(int i = 0; i < hits.length(); i++)
-            {
-                JSONObject Final_Object = new JSONObject();
-                JSONObject object3 = hits.getJSONObject(i);
-                Final_Object.put("message", object3.getString("content"));
-                Final_Object.put("created_at", object3.getString("created_at"));
-                Final_Object.put("author_login", object3.getJSONObject("author").getString("login"));
-                Final_Object.put("author_mail", object3.getJSONObject("author").getString("email"));
-                Final_Array.put(Final_Object);
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return String.valueOf(Final_Array);
-    }
-
-
-
 
     private JSONObject searchCall(String idTicket) throws JSONException {
         String[] path = {};

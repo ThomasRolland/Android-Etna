@@ -9,24 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.BadgeModel;
-import io.etna.intranet.Models.CustomAdapterActivite;
 import io.etna.intranet.Models.CustomAdapterBadge;
+import io.etna.intranet.Parse.JSONParse;
 import io.etna.intranet.Storage.TinyDB;
 
 public class Badges extends Fragment {
@@ -63,51 +54,11 @@ public class Badges extends Fragment {
         new Badges.GetDataTask().execute();
     }
 
-
-    private List<BadgeModel> genererBadges(){
-        List<BadgeModel> Badges = new ArrayList<BadgeModel>();
-        String json_string = null;
-        //requette
-        final JSONArray[] data = new JSONArray[1];
-        try {
-            data[0] = searchCall();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        json_string = parse(data[0]);
-        JSONArray get_data = null;
-        try {
-            get_data = new JSONArray(json_string);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        for(int i = 0; i < get_data.length(); i++) {
-            JSONObject My_data = null;
-            try {
-                My_data = get_data.getJSONObject(i);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                Badges.add(new BadgeModel(My_data.getString("name"), My_data.getString("image")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return Badges;
-    }
-
     class GetDataTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /**
-             * Progress Dialog for User Interaction
-             */
-
         }
 
         @Nullable
@@ -127,7 +78,7 @@ public class Badges extends Fragment {
                 e.printStackTrace();
             }
 
-            json_string = parse(data[0]);
+            json_string = JSONParse.parseBadges(data[0]);
             JSONArray get_data = null;
             try {
                 get_data = new JSONArray(json_string);
@@ -167,27 +118,6 @@ public class Badges extends Fragment {
         }
     }
 
-    private String parse(JSONArray resobj)
-    {
-        JSONArray Final_Array = new JSONArray();
-        try
-        {
-            for(int i = 0; i < resobj.length(); i++)
-            {
-                JSONObject Final_Object = new JSONObject();
-                JSONObject object3 = resobj.getJSONObject(i);
-                Final_Object.put("name", object3.getString("name"));
-                Final_Object.put("image", object3.getString("image"));
-                Final_Array.put(Final_Object);
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return String.valueOf(Final_Array);
-    }
-
     private JSONArray searchCall() throws JSONException {
         TinyDB tinydb = new TinyDB(getContext());
         String[] path = {"api", "users", tinydb.getString("userName"), "achievements"};
@@ -196,6 +126,5 @@ public class Badges extends Fragment {
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://achievements.etna-alternance.net/", path);
         return new JSONArray(data);
     }
-
 }
 

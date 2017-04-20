@@ -9,23 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterActivite;
+import io.etna.intranet.Parse.JSONParse;
 import io.etna.intranet.Storage.TinyDB;
 
 public class Activites extends Fragment {
@@ -57,19 +48,13 @@ public class Activites extends Fragment {
         listView = (ListView) getActivity().findViewById(R.id.flux);
         listView.setAdapter(adapter);
         new GetDataTask().execute();
-
     }
-
 
     class GetDataTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /**
-             * Progress Dialog for User Interaction
-             */
-
         }
 
         @Nullable
@@ -86,7 +71,7 @@ public class Activites extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            json_string = parse(data[0]);
+            json_string = JSONParse.parseActivites(data[0]);
             try {
                 JSONArray get_data = new JSONArray(json_string);
                 for (int i = 0; i < get_data.length(); i++) {
@@ -114,7 +99,6 @@ public class Activites extends Fragment {
                     }
                     ActiviteModel model = new ActiviteModel(key, name, date, cours);
                     list.add(model);
-                    //activites.add(new ActiviteModel(key, name, date, cours));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -136,52 +120,6 @@ public class Activites extends Fragment {
                 Log.d("fail", "fail");
             }
         }
-    }
-
-    private String parse(JSONObject resobj)
-    {
-        Iterator<?> keys = resobj.keys();
-        JSONArray Final_Array = new JSONArray();
-        while(keys.hasNext())
-        {
-            JSONArray Cour_Array = new JSONArray();
-            JSONObject Final_Object = new JSONObject();
-            String key = (String)keys.next();
-            try
-            {
-                if (resobj.get(key) instanceof JSONObject)
-                {
-                    Final_Object.put("key", key);
-                    JSONObject xx = new JSONObject(resobj.get(key).toString());
-                    JSONArray  project = xx.getJSONArray("project");
-                    for(int i = 0; i < project .length(); i++)
-                    {
-                        JSONObject object3 = project.getJSONObject(i);
-                        Final_Object.put("name", object3.getString("name"));
-                        Final_Object.put("date", object3.getString("date_end"));
-                    }
-                    JSONArray cours = xx.getJSONArray("cours");
-                    if (cours.length() != 0)
-                    {
-                        for(int i = 0; i < cours.length(); i++)
-                        {
-                            JSONObject cour_object = new JSONObject();
-                            JSONObject object4 = cours.getJSONObject(i);
-                            cour_object.put("name", object4.getString("name"));
-                            cour_object.put("id", object4.getString("activity_id"));
-                            Cour_Array.put(cour_object);
-                        }
-                        Final_Object.put("cour", Cour_Array);
-                    }
-                }
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-            Final_Array.put(Final_Object);
-        }
-        return String.valueOf(Final_Array);
     }
 
     private JSONObject searchCall() throws JSONException {

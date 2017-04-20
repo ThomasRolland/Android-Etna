@@ -19,19 +19,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterEvent;
 import io.etna.intranet.Models.EventModel;
+import io.etna.intranet.Parse.JSONParse;
 import io.etna.intranet.Storage.TinyDB;
-
-import static android.R.id.list;
 
 public class Planning extends Fragment {
 
@@ -43,21 +35,28 @@ public class Planning extends Fragment {
         return inflater.inflate(R.layout.fragment_menu_planning, container, false);
     }
 
-    ListView mListView;
+    private ListView listView;
+    private ArrayList<EventModel> list;
+    private CustomAdapterEvent adapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mon Planning");
-       /* Liste d'activités */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
 
-        List<EventModel> Events = genererEvents();
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterEvent(getContext(), list);
 
-        CustomAdapterEvent adapter = new CustomAdapterEvent(getActivity(), Events);
-        mListView.setAdapter(adapter);
-
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new Planning.GetDataTask().execute();
     }
 
 
@@ -76,48 +75,41 @@ public class Planning extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
 
-            /**
-             * Getting JSON Object from Web Using okHttp
-             */
+            List<EventModel> Events = new ArrayList<EventModel>();
             String json_string = null;
-            JSONArray data = new JSONArray();
+            //requette
+            final JSONArray[] data = new JSONArray[1];
             try {
-                data = searchCall();
+                data[0] = searchCall();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            json_string = parse(data);
+            json_string = JSONParse.parsePlanning(data[0]);
+            JSONArray get_data = null;
             try {
-                JSONArray get_data = new JSONArray(json_string);
-                for (int i = 0; i < get_data.length(); i++) {
-
-                    ArrayList<String> cours = new ArrayList<String>();
-                    JSONObject My_data = get_data.getJSONObject(i);
-                    String key = "";
-                    if (!My_data.isNull("key")) {
-                        key = My_data.getString("key");
-                    }
-                    String name = "";
-                    if (!My_data.isNull("name")) {
-                        name = My_data.getString("name");
-                    }
-                    String date = "";
-                    if (!My_data.isNull("date")) {
-                        date = "fin le " + My_data.getString("date");
-                    }
-                    if (!My_data.isNull("cour")) {
-                        JSONArray cours_array = My_data.getJSONArray("cour");
-                        for (int j = 0; j < cours_array.length(); j++) {
-                            JSONObject cours_object = cours_array.getJSONObject(j);
-                            cours.add(cours_object.getString("name"));
-                        }
-                    }
-                    ActiviteModel model = new ActiviteModel(key, name, date, cours);
-                    list.add(model);
-                    //activites.add(new ActiviteModel(key, name, date, cours));
-                }
+                get_data = new JSONArray(json_string);
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+            if (get_data.length() > 0) {
+                for(int i = 0; i < get_data.length(); i++) {
+                    JSONObject My_data = null;
+                    try {
+                        My_data = get_data.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        EventModel model = new EventModel(My_data.getString("name"), My_data.getString("location"), My_data.getString("start"), My_data.getString("end"));
+                        list.add(model);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else {
+                EventModel model = new EventModel("Aucun.", "", "", "");
+                list.add(model);
             }
             return null;
         }
@@ -138,27 +130,6 @@ public class Planning extends Fragment {
         }
     }
 
-    private String parse(JSONArray resobj)
-    {
-        JSONArray Final_Array = new JSONArray();
-        try
-        {
-                for (int i = 0; i < resobj.length(); i++) {
-                    JSONObject Final_Object = new JSONObject();
-                    JSONObject object3 = resobj.getJSONObject(i);
-                    Final_Object.put("name", object3.getString("name"));
-                    Final_Object.put("location", object3.getString("location"));
-                    Final_Object.put("start", object3.getString("start"));
-                    Final_Object.put("end", object3.getString("end"));
-                    Final_Array.put(Final_Object);
-                }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return String.valueOf(Final_Array);
-    }
 
     private JSONArray searchCall() throws JSONException {
         /* Date */

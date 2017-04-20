@@ -2,13 +2,9 @@ package io.etna.intranet;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-
 import com.google.zxing.WriterException;
-
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
-
-import android.graphics.Bitmap;
 
 /**
  * Created by nextjoey on 14/04/2017.

@@ -10,23 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterMurDetails;
 import io.etna.intranet.Models.MurDetailsModel;
+import io.etna.intranet.Parse.JSONParse;
 import io.etna.intranet.Storage.TinyDB;
 
 public class MurPromoDetails extends Fragment {
@@ -39,7 +31,10 @@ public class MurPromoDetails extends Fragment {
         return inflater.inflate(R.layout.fragment_menu_mur_details, container, false);
     }
 
-    ListView mListView;
+    private ListView listView;
+    private ArrayList<MurDetailsModel> list;
+    private CustomAdapterMurDetails adapter;
+    public String idPrincipal = new String();
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -48,6 +43,7 @@ public class MurPromoDetails extends Fragment {
         getActivity().setTitle("Discussion");
 
         /* Récupere les informations (id) de la vue précédente */
+        idPrincipal = getArguments().getString("idPrincipal");
         String idPrincipal = getArguments().getString("idPrincipal");
         String titrePrincipal = getArguments().getString("titrePrincipal");
         String createurPrincipal= getArguments().getString("createurPrincipal");
@@ -66,13 +62,18 @@ public class MurPromoDetails extends Fragment {
         dateCreationPrincipalOnView.setText(dateCreationPrincipal);
         messagePrincipalOnView.setText(messagePrincipal);
 
-        /* Liste des messages du mur */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterMurDetails(getContext(), list);
 
-        List<MurDetailsModel> messages = genererMur(idPrincipal);
-
-        CustomAdapterMurDetails adapter = new CustomAdapterMurDetails(getActivity() , messages);
-        mListView.setAdapter(adapter);
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new MurPromoDetails.GetDataTask().execute();
     }
 
     class GetDataTask extends AsyncTask<Void, Void, Void> {
@@ -100,7 +101,7 @@ public class MurPromoDetails extends Fragment {
                 e1.printStackTrace();
             }
 
-            json_string = parse(data[0], idPrincipal);
+            json_string = JSONParse.parseMurPromoDetails(data[0], idPrincipal);
             JSONArray get_data = null;
             try {
                 get_data = new JSONArray(json_string);
@@ -116,7 +117,7 @@ public class MurPromoDetails extends Fragment {
                 }
                 try {
                     //ici
-                    messages.add(new MurDetailsModel("", My_data.getString("id_user"), My_data.getString("date"), My_data.getString("message")));
+                    MurDetailsModel model = new MurDetailsModel("", My_data.getString("id_user"), My_data.getString("date"), My_data.getString("message"));
                     list.add(model);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -142,39 +143,6 @@ public class MurPromoDetails extends Fragment {
         }
     }
 
-    private String parse(JSONObject resobj, String idPrincipal)
-    {
-        JSONArray Final_Array = new JSONArray();
-        try
-        {
-            JSONArray  hits = resobj.getJSONArray("hits");
-
-            for(int i = 0; i < hits.length(); i++)
-            {
-                JSONObject object3 = hits.getJSONObject(i);
-                if (object3.getString("id").equals(idPrincipal)) {
-                    JSONArray messages = object3.getJSONArray("messages");
-                    for(int j = 1; j < messages.length(); j++) //On elimine le premier message
-                    {
-                        JSONObject Final_Object = new JSONObject();
-                        JSONObject onemessage = messages.getJSONObject(j);
-                        Log.d("Message : ", onemessage.toString());
-                        Final_Object.put("createur", onemessage.getString("user"));
-                        Final_Object.put("date", onemessage.getString("created_at").substring(0,10));
-                        Final_Object.put("message", onemessage.getString("content"));
-                        JSONObject data_user = searchCall_user(onemessage.getString("user"));
-                        Final_Object.put("id_user", data_user.getString("firstname") + " " + data_user.getString("lastname"));
-                        Final_Array.put(Final_Object);
-                    }
-                }
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return String.valueOf(Final_Array);
-    }
 
     private JSONObject searchCall() throws JSONException {
         TinyDB tinydb = new TinyDB(getContext());

@@ -9,23 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import io.etna.intranet.Curl.NetworkService;
-import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterNote;
 import io.etna.intranet.Models.NoteModel;
+import io.etna.intranet.Parse.JSONParse;
 import io.etna.intranet.Storage.TinyDB;
 
 public class Notes extends Fragment {
@@ -38,7 +30,10 @@ public class Notes extends Fragment {
         return inflater.inflate(R.layout.fragment_menu_notes, container, false);
     }
 
-    ListView mListView;
+    private ListView listView;
+    private ArrayList<NoteModel> list;
+    private CustomAdapterNote adapter;
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -46,14 +41,19 @@ public class Notes extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mes Notes");
 
-      /* Liste les notes */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
 
-        List<NoteModel> notes = genererNotes();
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterNote(getContext(), list);
 
-        CustomAdapterNote adapter = new CustomAdapterNote(getActivity() ,notes);
-        mListView.setAdapter(adapter);
-
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new Notes.GetDataTask().execute();
     }
 
 
@@ -81,7 +81,7 @@ public class Notes extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            json_string = parse(data[0]);
+            json_string = JSONParse.parseNotes(data[0]);
             JSONArray get_data = null;
             try {
                 get_data = new JSONArray(json_string);
@@ -96,8 +96,7 @@ public class Notes extends Fragment {
                     e.printStackTrace();
                 }
                 try {
-                    //ici
-                    notes.add(new NoteModel(My_data.getString("UVNom"), My_data.getString("UVDescription"), My_data.getString("projet"), My_data.getString("commentaire"), My_data.getString("note"), My_data.getString("noteMin"), My_data.getString("noteMoy"), My_data.getString("noteMax"), true));
+                    NoteModel model = new NoteModel(My_data.getString("UVNom"), My_data.getString("UVDescription"), My_data.getString("projet"), My_data.getString("commentaire"), My_data.getString("note"), My_data.getString("noteMin"), My_data.getString("noteMoy"), My_data.getString("noteMax"), true);
                     list.add(model);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -120,33 +119,6 @@ public class Notes extends Fragment {
                 Log.d("fail", "fail");
             }
         }
-    }
-
-    private String parse(JSONArray resobj)
-    {
-        JSONArray Final_Array = new JSONArray();
-        try
-        {
-            for(int i = 0; i < resobj.length(); i++)
-            {
-                JSONObject Final_Object = new JSONObject();
-                JSONObject object3 = resobj.getJSONObject(i);
-                Final_Object.put("UVNom", object3.getString("uv_name"));
-                Final_Object.put("UVDescription", object3.getString("uv_long_name"));
-                Final_Object.put("projet", object3.getString("activity_name"));
-                Final_Object.put("commentaire", object3.getJSONObject("checklist").getJSONArray("comments").getJSONObject(0).getString("comment"));
-                Final_Object.put("note", object3.getString("student_mark"));
-                Final_Object.put("noteMin", object3.getString("minimal"));
-                Final_Object.put("noteMax", object3.getString("maximal"));
-                Final_Object.put("noteMoy", object3.getString("average"));
-                Final_Array.put(Final_Object);
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return String.valueOf(Final_Array);
     }
 
     private JSONArray searchCall() throws JSONException {
