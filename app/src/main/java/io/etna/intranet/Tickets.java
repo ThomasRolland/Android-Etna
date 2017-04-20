@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.etna.intranet.Curl.NetworkService;
+import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterTicket;
 import io.etna.intranet.Models.TicketModel;
 
@@ -77,54 +79,67 @@ public class Tickets extends Fragment {
         });
     }
 
+    class GetDataTask extends AsyncTask<Void, Void, Void> {
 
-    private List<TicketModel> genererTickets(){
-        List<TicketModel> Tickets = new ArrayList<TicketModel>();
-        String json_string = null;
-        //requette
-        final JSONObject[] data = new JSONObject[1];
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<String> callable = new Callable<String>() {
-            @Override
-            public String call() {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /**
+             * Progress Dialog for User Interaction
+             */
+
+        }
+
+        @Nullable
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            List<TicketModel> Tickets = new ArrayList<TicketModel>();
+            String json_string = null;
+            //requette
+            final JSONObject[] data = new JSONObject[1];
+                        data[0] = searchCall();
+                    return String.valueOf();
+
+                json_string = parse(data[0]);
+            JSONArray get_data = null;
+            try {
+                get_data = new JSONArray(json_string);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            for(int i = 0; i < get_data.length(); i++) {
+                JSONObject My_data = null;
                 try {
-                    data[0] = searchCall();
+                    My_data = get_data.getJSONObject(i);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                return String.valueOf(parse(data[0]));
+                try {
+                    //ici
+                    Tickets.add(new TicketModel(My_data.getString("id"), My_data.getString("title"), "Créé le : "+My_data.getString("created_at"), My_data.getString("updated_at"), My_data.getString("state"), My_data.getString("last_editor")));
+                    list.add(model);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        };
-        Future<String> future = executor.submit(callable);
-        try {
-            json_string = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        executor.shutdown();
-        JSONArray get_data = null;
-        try {
-            get_data = new JSONArray(json_string);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        for(int i = 0; i < get_data.length(); i++) {
-            JSONObject My_data = null;
-            try {
-                My_data = get_data.getJSONObject(i);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                Tickets.add(new TicketModel(My_data.getString("id"), My_data.getString("title"), "Créé le : "+My_data.getString("created_at"), My_data.getString("updated_at"), My_data.getString("state"), My_data.getString("last_editor")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            //messages.add(new MurModel(My_data.getString("id"), My_data.getString("id_user"), My_data.getString("title"), My_data.getString("date"), My_data.getString("message")));
+            return null;
         }
 
-        return Tickets;
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            /**
+             * Checking if List size if more than zero then
+             * Update ListView
+             */
+            if(list.size() > 0) {
+                adapter.notifyDataSetChanged();
+            } else {
+                Log.d("fail", "fail");
+            }
+        }
     }
 
     private String parse(JSONObject resobj)
