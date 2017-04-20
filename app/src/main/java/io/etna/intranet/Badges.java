@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.BadgeModel;
+import io.etna.intranet.Models.CustomAdapterActivite;
 import io.etna.intranet.Models.CustomAdapterBadge;
 import io.etna.intranet.Storage.TinyDB;
 
@@ -38,22 +39,28 @@ public class Badges extends Fragment {
         return inflater.inflate(R.layout.fragment_menu_badges, container, false);
     }
 
-    ListView mListView;
 
+    private ListView listView;
+    private ArrayList<BadgeModel> list;
+    private CustomAdapterBadge adapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mes Badges");
+        list = new ArrayList<>();
+        /**
+         * Binding that List to Adapter
+         */
+        adapter = new CustomAdapterBadge(getContext(), list);
 
-          /* Liste d'activités */
-        mListView = (ListView) getActivity().findViewById(R.id.flux);
-
-        List<BadgeModel> Badges = genererBadges();
-        Log.d("Badges : ", String.valueOf(Badges.size()));
-        CustomAdapterBadge adapter = new CustomAdapterBadge(getActivity(), Badges);
-        mListView.setAdapter(adapter);
+        /**
+         * Getting List and Setting List Adapter
+         */
+        listView = (ListView) getActivity().findViewById(R.id.flux);
+        listView.setAdapter(adapter);
+        new Badges.GetDataTask().execute();
     }
 
 
@@ -135,8 +142,7 @@ public class Badges extends Fragment {
                     e.printStackTrace();
                 }
                 try {
-                    //ActiviteModel model = new ActiviteModel(key, name, date, cours);
-                    Badges.add(new BadgeModel(My_data.getString("name"), My_data.getString("image")));
+                    BadgeModel model = new BadgeModel(My_data.getString("name"), My_data.getString("image"));
                     list.add(model);
                 } catch (JSONException e) {
                     e.printStackTrace();
