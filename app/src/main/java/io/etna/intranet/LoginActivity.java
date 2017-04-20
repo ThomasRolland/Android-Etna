@@ -229,9 +229,14 @@ public class LoginActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
 
             try {
-                    Log.d("coucou", String.valueOf(searchCall(mEmail, mPassword)));
-
-                Thread.sleep(1000);
+                JSONObject object = searchCall(mEmail, mPassword);
+                if (object.has("id") && !object.isNull("id")) {
+                    Thread.sleep(2000);
+                    return true;
+                }else
+                {
+                    return false;
+                }
             } catch (InterruptedException e) {
                 return false;
             } catch (JSONException e) {
