@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,9 +26,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.etna.intranet.Curl.NetworkService;
+import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterEvent;
 import io.etna.intranet.Models.EventModel;
 import io.etna.intranet.Storage.TinyDB;
+
+import static android.R.id.list;
 
 public class Planning extends Fragment {
 
@@ -57,58 +61,81 @@ public class Planning extends Fragment {
     }
 
 
+    class GetDataTask extends AsyncTask<Void, Void, Void> {
 
-    private List<EventModel> genererEvents() {
-        List<EventModel> Events = new ArrayList<EventModel>();
-        String json_string = null;
-        //requette
-        final JSONArray[] data = new JSONArray[1];
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<String> callable = new Callable<String>() {
-            @Override
-            public String call() {
-                try {
-                    data[0] = searchCall();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /**
+             * Progress Dialog for User Interaction
+             */
+
+        }
+
+        @Nullable
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            /**
+             * Getting JSON Object from Web Using okHttp
+             */
+            String json_string = null;
+            JSONArray data = new JSONArray();
+            try {
+                data = searchCall();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            json_string = parse(data);
+            try {
+                JSONArray get_data = new JSONArray(json_string);
+                for (int i = 0; i < get_data.length(); i++) {
+
+                    ArrayList<String> cours = new ArrayList<String>();
+                    JSONObject My_data = get_data.getJSONObject(i);
+                    String key = "";
+                    if (!My_data.isNull("key")) {
+                        key = My_data.getString("key");
+                    }
+                    String name = "";
+                    if (!My_data.isNull("name")) {
+                        name = My_data.getString("name");
+                    }
+                    String date = "";
+                    if (!My_data.isNull("date")) {
+                        date = "fin le " + My_data.getString("date");
+                    }
+                    if (!My_data.isNull("cour")) {
+                        JSONArray cours_array = My_data.getJSONArray("cour");
+                        for (int j = 0; j < cours_array.length(); j++) {
+                            JSONObject cours_object = cours_array.getJSONObject(j);
+                            cours.add(cours_object.getString("name"));
+                        }
+                    }
+                    ActiviteModel model = new ActiviteModel(key, name, date, cours);
+                    list.add(model);
+                    //activites.add(new ActiviteModel(key, name, date, cours));
                 }
-                return String.valueOf(parse(data[0]));
-            }
-        };
-        Future<String> future = executor.submit(callable);
-        try {
-            json_string = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        executor.shutdown();
-        JSONArray get_data = null;
-        try {
-            get_data = new JSONArray(json_string);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if (get_data.length() > 0) {
-        for(int i = 0; i < get_data.length(); i++) {
-            JSONObject My_data = null;
-            try {
-                My_data = get_data.getJSONObject(i);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try {
-                Events.add(new EventModel(My_data.getString("name"), My_data.getString("location"), My_data.getString("start"), My_data.getString("end")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        }
-        else {
-            Log.d("Events : ", "Aucun");
-            Events.add(new EventModel("Aucun.", "", "", ""));
+            return null;
         }
 
-        return Events;
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            /**
+             * Checking if List size if more than zero then
+             * Update ListView
+             */
+            if(list.size() > 0) {
+                adapter.notifyDataSetChanged();
+            } else {
+                Log.d("fail", "fail");
+            }
+        }
     }
 
     private String parse(JSONArray resobj)
