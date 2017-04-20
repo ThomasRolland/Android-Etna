@@ -79,6 +79,8 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
+        TinyDB tinydb = new TinyDB(getApplicationContext());
+        mEmailView.setText(tinydb.getString("loginStored"));
     }
 
 
@@ -224,9 +226,13 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 JSONObject object = searchCall(mEmail, mPassword);
+                //Success ou pas, on sauvegarde son login pour qu'il se recconecte facilement ultérieurement
+                TinyDB tinydb = new TinyDB(getApplicationContext());
+                tinydb.putString("loginStored", object.getString("login"));
+
+                //On verifie si l'auth a réussi :
                 if (object.has("id") && !object.isNull("id")) {
                     //Login succes
-                    TinyDB tinydb = new TinyDB(getApplicationContext());
                     tinydb.putString("userName", object.getString("login"));
                     JSONObject data_user = searchCall_user(object.getString("id"));
                     tinydb.putString("userId", data_user.getString("id"));
