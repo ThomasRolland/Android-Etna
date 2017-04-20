@@ -223,11 +223,12 @@ public class LoginActivity extends AppCompatActivity {
                 JSONObject object = searchCall(mEmail, mPassword);
                 //Success ou pas, on sauvegarde son login pour qu'il se recconecte facilement ultérieurement
                 TinyDB tinydb = new TinyDB(getApplicationContext());
-                tinydb.putString("loginStored", object.getString("login"));
+
                 Log.d("object: ", object.toString());
 
                 //On verifie si l'auth a réussi :
                 if (object.has("id") && !object.isNull("id")) {
+                    tinydb.putString("loginStored", object.getString("login"));
                     //Login succes
                     tinydb.putString("userName", object.getString("login"));
                     JSONObject data_user = searchCall_user(object.getString("id"));
@@ -256,7 +257,6 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(myIntent);
