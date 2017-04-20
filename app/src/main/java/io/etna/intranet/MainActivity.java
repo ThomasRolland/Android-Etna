@@ -11,6 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import io.etna.intranet.Storage.TinyDB;
 
 
 public class MainActivity extends AppCompatActivity
@@ -35,6 +39,17 @@ public class MainActivity extends AppCompatActivity
 
         //add this line to display menu1 when the activity is loaded
         displaySelectedScreen(R.id.nav_mur);
+
+        /*Rempli le menu*/
+        TinyDB tinydb = new TinyDB(getApplicationContext());
+
+        View hView =  navigationView.getHeaderView(0);
+        TextView m_login = (TextView)hView.findViewById(R.id.m_login);
+        m_login.setText(tinydb.getString("userName"));
+        TextView m_promo = (TextView)hView.findViewById(R.id.m_promo);
+        m_promo.setText(tinydb.getString("userPromoName"));
+        TextView m_nom = (TextView)hView.findViewById(R.id.m_nom);
+        m_nom.setText(tinydb.getString("userFirstname")+" "+tinydb.getString("userLastname"));
     }
 
     @Override

@@ -39,27 +39,24 @@
                 android:paddingLeft="10dp">
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/m_nom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.31"
-                    android:text="Joseph Bedminster"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/m_login"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.22"
-                    android:text="bedmin_j"
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/m_promo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.31"
-                    android:text="Prep'2 (2020)" />
+                    android:layout_weight="0.31" />
 
             </LinearLayout>
 

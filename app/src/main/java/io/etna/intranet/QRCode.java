@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import io.etna.intranet.Storage.TinyDB;
 
@@ -44,6 +45,11 @@ public class QRCode extends Fragment {
         b2 = (Button) getActivity().findViewById(R.id.b2);
         b1.setOnClickListener(call_prep);
         b2.setOnClickListener(call_alt);
+
+        TextView mLogin = (TextView) getActivity().findViewById(R.id.login);
+        mLogin.setText(tinydb.getString("userName"));
+        TextView mPromo = (TextView) getActivity().findViewById(R.id.promo);
+        mPromo.setText(tinydb.getString("userPromoName"));
     }
 
     View.OnClickListener call_prep = new View.OnClickListener() {

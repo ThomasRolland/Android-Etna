@@ -149,7 +149,7 @@ public class MurPromo extends Fragment {
                         JSONObject object3 = hits.getJSONObject(i);
                         Final_Object.put("id", object3.getString("id"));
                         Final_Object.put("title", object3.getString("title"));
-                        Final_Object.put("date", object3.getString("created_at"));
+                        Final_Object.put("date", object3.getString("created_at").substring(0,10));
                         Final_Object.put("message", object3.getJSONArray("messages").getJSONObject(0).getString("content"));
                         Final_Object.put("id_user", object3.getJSONObject("last_message").getString("user"));
                         Final_Array.put(Final_Object);
