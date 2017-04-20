@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -137,6 +138,8 @@ public class MurPromoDetails extends Fragment {
              */
             if(list.size() > 0) {
                 adapter.notifyDataSetChanged();
+                ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progress);
+                progressBar.setVisibility(View.INVISIBLE);
             } else {
                 Log.d("fail", "fail");
             }

@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,6 +139,8 @@ public class Tickets extends Fragment {
              */
             if(list.size() > 0) {
                 adapter.notifyDataSetChanged();
+                ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progress);
+                progressBar.setVisibility(View.INVISIBLE);
             } else {
                 Log.d("fail", "fail");
             }
