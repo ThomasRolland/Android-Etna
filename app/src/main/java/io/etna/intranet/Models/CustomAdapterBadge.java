@@ -36,38 +36,20 @@ public class CustomAdapterBadge extends ArrayAdapter<BadgeModel> {
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_badges,parent, false);
         }
+        BadgeModel badge = getItem(position);
 
-        BadgeModelViewHolder viewHolder = (BadgeModelViewHolder) convertView.getTag();
-        if(viewHolder == null){
-            viewHolder = new BadgeModelViewHolder();
-            viewHolder.nom = (TextView) convertView.findViewById(R.id.nom);
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
-            convertView.setTag(viewHolder);
+        TextView text = (TextView) convertView.findViewById(R.id.nom);
+        ImageView image = (ImageView) convertView.findViewById(R.id.image);
+        text.setText(badge.getNom());
+
+
+            Picasso picasso = new Picasso.Builder(getContext()).downloader(new CookieImageDownloader(getContext())).build();
+            picasso.with(getContext()).load(badge.getImageURL()).into(image);
+        {
+            Log.d("Impossible de récuperer l'image : ", badge.getImageURL());
         }
 
-        //getItem(position) va récupérer l'item [position] de la List<BadgeModel> BadgeModels
-        BadgeModel BadgeModel = getItem(position);
-
-        //il ne reste plus qu'à remplir notre vue
-        assert BadgeModel != null;
-        viewHolder.nom.setText(BadgeModel.getNom());
-
-
-
-        Picasso picasso = new Picasso.Builder(getContext()).downloader(new CookieImageDownloader(getContext())).build();
-
-        picasso.load(BadgeModel.getImageURL()).into(viewHolder.imageView);
-         {
-                Log.d("A", "Erreur");
-         }
 
         return convertView;
     }
-
-    private class BadgeModelViewHolder{
-        public TextView nom;
-        public ImageView imageView;
-    }
-
-
 }
