@@ -209,8 +209,8 @@ public class JSONParse {
                 }
                 Final_Object.put("id", object3.getString("id"));
                 Final_Object.put("title", object3.getString("title"));
-                Final_Object.put("created_at", object3.getString("created_at"));
-                Final_Object.put("updated_at", object3.getString("updated_at"));
+                Final_Object.put("created_at", object3.getString("created_at").substring(0,10));
+                Final_Object.put("updated_at", object3.getString("updated_at").substring(0,10));
                 Final_Object.put("last_editor", object3.getJSONObject("last_edit").getString("login"));
                 Final_Array.put(Final_Object);
             }
@@ -233,7 +233,7 @@ public class JSONParse {
                 JSONObject Final_Object = new JSONObject();
                 JSONObject object3 = hits.getJSONObject(i);
                 Final_Object.put("message", object3.getString("content"));
-                Final_Object.put("created_at", object3.getString("created_at"));
+                Final_Object.put("created_at", object3.getString("created_at").substring(0,10));
                 Final_Object.put("author_login", object3.getJSONObject("author").getString("login"));
                 Final_Object.put("author_mail", object3.getJSONObject("author").getString("email"));
                 Final_Array.put(Final_Object);

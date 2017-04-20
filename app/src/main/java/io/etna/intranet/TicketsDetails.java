@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,8 +47,8 @@ public class TicketsDetails extends Fragment {
 
         /* Récupere les informations (id) de la vue précédente */
         idTicket = getArguments().getString("idTicket");
-        Log.d("Ticket de la vue chargé : id ", idTicket);
-
+        TextView titre = (TextView) getActivity().findViewById(R.id.titreTicket);
+        titre.setText(getArguments().getString("titreTicket"));
 
         list = new ArrayList<>();
         /**

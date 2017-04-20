@@ -66,7 +66,9 @@ public class Tickets extends Fragment {
                 /*Sauvegarde les values a passer*/
                 Bundle bundle = new Bundle();
                 String idPrincipal = list.get(position).getTicketId();
+                String titreTicket = list.get(position).getTitre();
                 bundle.putString("idTicket",idPrincipal);
+                bundle.putString("titreTicket",titreTicket);
 
                 /*Change de fragment*/
                 TicketsDetails fragment2 = new TicketsDetails();

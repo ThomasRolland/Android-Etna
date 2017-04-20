@@ -20,7 +20,7 @@
             android:layout_height="40dp">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/titreTicket"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -28,7 +28,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
-                android:text="Tous les tickets (ouverts/fermés)"
+                android:text="Ouverture du ticket..."
                 android:textColor="@color/Black_Material"
                 android:textSize="18sp"
                 android:textStyle="bold" />

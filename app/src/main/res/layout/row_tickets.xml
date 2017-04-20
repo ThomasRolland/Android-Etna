@@ -29,7 +29,7 @@
                 android:layout_weight="1.03"
                 android:text="Titre du ticket"
                 android:textColor="@color/Black_Material"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
