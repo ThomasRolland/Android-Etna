@@ -3,6 +3,7 @@ package io.etna.intranet;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public class Badges extends Fragment {
         mListView = (ListView) getActivity().findViewById(R.id.flux);
 
         List<BadgeModel> Badges = genererBadges();
-
+        Log.d("Badges : ", String.valueOf(Badges.size()));
         CustomAdapterBadge adapter = new CustomAdapterBadge(getActivity(), Badges);
         mListView.setAdapter(adapter);
     }

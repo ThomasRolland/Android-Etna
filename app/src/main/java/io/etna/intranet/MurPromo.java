@@ -149,7 +149,7 @@ public class MurPromo extends Fragment {
                         Final_Object.put("id", object3.getString("id"));
                         Final_Object.put("title", object3.getString("title"));
                         Final_Object.put("date", object3.getString("created_at"));
-                        Final_Object.put("message", object3.getJSONObject("last_message").getString("content"));
+                        Final_Object.put("message", object3.getJSONArray("messages").getJSONObject(0).getString("content"));
                         Final_Object.put("id_user", object3.getJSONObject("last_message").getString("user"));
                         Final_Array.put(Final_Object);
                     }
@@ -163,7 +163,7 @@ public class MurPromo extends Fragment {
 
     private JSONObject searchCall() throws JSONException {
         String[] path = {"terms", "Prep'ETNA2 - 2020", "conversations"};
-        String[] get = {"0" , "50"};
+        String[] get = {"0" , "8"};
         String[] get_data = {"from" , "size"};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);
         return new JSONObject(data);

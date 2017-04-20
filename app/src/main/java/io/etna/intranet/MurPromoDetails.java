@@ -159,7 +159,7 @@ public class MurPromoDetails extends Fragment {
 
     private JSONObject searchCall() throws JSONException {
         String[] path = {"terms", "Prep'ETNA2 - 2020", "conversations"};
-        String[] get = {"0" , "50"};
+        String[] get = {"0" , "8"};
         String[] get_data = {"from" , "size"};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);
         return new JSONObject(data);
