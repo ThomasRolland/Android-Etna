@@ -4,11 +4,14 @@ package io.etna.intranet.Curl;
  * Created by thomasrolland on 13/04/2017.
  */
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -196,7 +199,16 @@ public enum NetworkService implements NetworkInterface {
         }
     }
 
-
+    private Bitmap getData_image(Request request) {
+        OkHttpClient client = buildClient();
+        try {
+            Response response = client.newCall(request).execute();
+            return BitmapFactory.decodeStream(response.body().byteStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     @Override
     public String getString(String endpoint, String username, String password) {
         Log.d("NetworkService", "getString by username and password from " + endpoint);
@@ -230,6 +242,23 @@ public enum NetworkService implements NetworkInterface {
         Log.d("NetworkService","built search url: " + url.toString());
         Request request = buildRequest(url).build();
         return getData(request);
+    }
+
+
+    public Bitmap search_image(String[] get, String[] query, String urle, String[] path) {
+        Uri.Builder uri = Uri.parse(urle)
+                .buildUpon();
+        for (int i = 0; i < path.length ; i++) {
+            uri.appendPath(path[i]);
+        }
+        for (int i = 0; i < query.length ; i++) {
+            uri.appendQueryParameter(query[i], get[i]);
+        }
+        Uri uril  = uri.build();
+        URL url = buildURL(uril);
+        Log.d("NetworkService","built search url: " + url.toString());
+        Request request = buildRequest(url).build();
+        return getData_image(request);
     }
 
     public String search_login(String login, String password, String urle) {

@@ -128,7 +128,7 @@ public class MurPromo extends Fragment {
                 e.printStackTrace();
             }
             try {
-                messages.add(new MurModel(My_data.getString("id"), My_data.getString("id_user"), My_data.getString("title"), My_data.getString("date"), My_data.getString("message")));
+                messages.add(new MurModel(My_data.getString("id"), My_data.getString("id_user"), My_data.getString("title"), My_data.getString("date"), My_data.getString("message"), null));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -151,7 +151,8 @@ public class MurPromo extends Fragment {
                         Final_Object.put("title", object3.getString("title"));
                         Final_Object.put("date", object3.getString("created_at").substring(0,10));
                         Final_Object.put("message", object3.getJSONArray("messages").getJSONObject(0).getString("content"));
-                        Final_Object.put("id_user", object3.getJSONObject("last_message").getString("user"));
+                        JSONObject data_user = searchCall_user(object3.getJSONArray("messages").getJSONObject(0).getString("user"));
+                        Final_Object.put("id_user", data_user.getString("firstname") + " " + data_user.getString("lastname"));
                         Final_Array.put(Final_Object);
                     }
             }
@@ -168,6 +169,14 @@ public class MurPromo extends Fragment {
         String[] get = {"0" , "8"};
         String[] get_data = {"from" , "size"};
         final String data = NetworkService.INSTANCE.search(get, get_data,"https://prepintra-api.etna-alternance.net/", path);
+        return new JSONObject(data);
+    }
+
+    private JSONObject searchCall_user(String id) throws JSONException {
+        String[] path = {"api", "users", id};
+        String[] get = {};
+        String[] get_data = {};
+        final String data = NetworkService.INSTANCE.search(get, get_data, "https://auth.etna-alternance.net/", path);
         return new JSONObject(data);
     }
 
