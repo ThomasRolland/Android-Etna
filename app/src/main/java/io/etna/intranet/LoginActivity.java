@@ -3,6 +3,7 @@ package io.etna.intranet;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,8 +31,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import io.etna.intranet.Curl.NetworkService;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -151,14 +158,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isEmailValid(String email) {
         if (email.contains("_")
-                && email.length() > 8)
+                && email.length() >= 8)
             return true;
         else
             return false;
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 8;
+        return password.length() >= 8;
     }
 
     /**
@@ -197,7 +204,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private JSONObject searchCall(String login, String password) throws JSONException {
 
+        final String data = NetworkService.INSTANCE.search_login(login, password, "https://auth.etna-alternance.net/login");
+        return new JSONObject(data);
+    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -218,19 +229,15 @@ public class LoginActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
+                    Log.d("coucou", String.valueOf(searchCall(mEmail, mPassword)));
+
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
 
             // TODO: register the new account here.
             return true;
@@ -242,7 +249,10 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                finish();
+                //finish();
+                Log.d("OK", "OK");
+                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                LoginActivity.this.startActivity(myIntent);
             } else {
                 mPasswordView.setError("Echec de l'authentification.");
                 mPasswordView.requestFocus();

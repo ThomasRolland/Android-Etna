@@ -3,6 +3,7 @@ package io.etna.intranet;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,7 @@ public class Activites extends Fragment {
         }
         executor.shutdown();
         try {
+            Log.d("test", json_string);
             JSONArray get_data = new JSONArray(json_string);
             for(int i = 0; i < get_data.length(); i++) {
                 ArrayList<String> cours = new ArrayList<String>();

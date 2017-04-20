@@ -9,18 +9,28 @@ import android.util.Base64;
 import android.util.Log;
 
 import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
 import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.JavaNetCookieJar;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public enum NetworkService implements NetworkInterface {
@@ -31,12 +41,79 @@ public enum NetworkService implements NetworkInterface {
     private static OkHttpClient okHttpClient = null;
     private static final String SEARCH_URL = "https://auth.etna-alternance.net/login";
 
+    CookieJar cookieJar = new CookieJar() {
+        private final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
+
+        @Override
+        public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+            cookieStore.put("etna", cookies);
+            Log.d("cookie stored", String.valueOf(cookies));
+            Log.d("cookie url", url.host());
+            Log.d("cookie url", String.valueOf(cookieStore.get("etna")));
+
+        }
+
+        @Override
+        public List<Cookie> loadForRequest(HttpUrl url) {
+            Log.d("cookie used", String.valueOf(cookieStore.get("etna")));
+            Log.d("cookie url", url.host());
+            List<Cookie> cookies = cookieStore.get("etna");
+            return cookies != null ? cookies : new ArrayList<Cookie>();
+        }
+    };
 
     /**
      * Method to build and return an OkHttpClient so we can set/get
      * headers quickly and efficiently.
      * @return OkHttpClient
      */
+    private OkHttpClient buildClient_login(final String login, final String password) {
+        if (okHttpClient != null) return okHttpClient;
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        okHttpClientBuilder.addInterceptor(httpLoggingInterceptor);
+        okHttpClientBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                // Add whatever we want to our request headers.
+                RequestBody formBody = new FormBody.Builder()
+                        .add("login", login)
+                        .add("password", password)
+                        .build();
+
+                Request request = chain.request().newBuilder()
+                        .post(formBody)
+                        .addHeader("Accept", "application/json")
+                        .build();
+                Response response;
+                try {
+                    response = chain.proceed(request);
+                } catch (SocketTimeoutException | UnknownHostException e) {
+                    e.printStackTrace();
+                    throw new IOException(e);
+                }
+                return response;
+            }
+        });
+        // init okhttp 3 logger
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
+        return  okHttpClientBuilder
+                .cookieJar(cookieJar)
+                .build();
+    }
+
+    private Request.Builder buildRequest(URL url) {
+        return new Request.Builder()
+                .url(url);
+    }
+
     private OkHttpClient buildClient() {
         if (okHttpClient != null) return okHttpClient;
 
@@ -56,16 +133,10 @@ public enum NetworkService implements NetworkInterface {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 // Add whatever we want to our request headers.
-                RequestBody formBody = new FormBody.Builder()
-                        .add("login", "rollan_t")
-                        .add("password", "oO07Yvqu")
-                        .build();
-
                 Request request = chain.request().newBuilder()
                         .addHeader("Accept", "application/json")
-                        .addHeader("Cookie", "authenticator=eyJpZGVudGl0eSI6ImV5SnBaQ0k2Tnprek5Dd2liRzluYVc0aU9pSmlaV1J0YVc1ZmFpSXNJbXh2WjJGeklqcG1ZV3h6WlN3aVozSnZkWEJ6SWpwYkluTjBkV1JsYm5RaVhTd2liRzluYVc1ZlpHRjBaU0k2SWpJd01UY3RNRFF0TVRrZ01UQTZNek02TVRVaWZRPT0iLCJzaWduYXR1cmUiOiJqQ1dFUnYyTFFGejBhSlwvMTBqMGNtcTZ3UXZcLzYwRkVEK1wvdXdzRlNiQ2wrRDRSUXpxUG9MaDJqQjlCcnJnWVZzSk5zMHVKckYrKzBYUkxCODJoZVF1V1pQaUtKd00xSVgyQ283a0dFUFpCVkJ6MlFOT2xGdWdON3B3cEpoQ1BjV0J1K3JaWGhZYkU5b1hFTkI5TVMwbjlNbzBSemxQV2hcL2VtNjlvNk9XR3ZyU1czQ3RYcW42QmtwYzVwV3dGcjY0NzlXeHl0dHpsZ1RLY21pZ3dBbXJKb2N1MXlwOWVFNFZBTUJkMUFxcHVIZHBOWlhqRnNiY3JHbnQ0VkVocmlUSkxucG9GVHBPWFZUeDBFcGRYZGM0d001aVhHZWFlYmYwMTA4V25vRVF1VGtlOFZqZXZva05OK2tyTFNxaVU2UzVWZDBOUEdHakdYVFc2UkppU0g5dUpaM3lpbGVXSU1NcVJ3MEE0aHFjRVhTMHRSdGNGbGxvT1RrdVkyM2JKTWordnJ3SWM1NVwvK0pxNzdmd3BURU9SbjI2aUJVQzc4UGM3V1FmYjQ5VUJjaCs0UUNzTTdBR0ozYk9lKzQ4S0dNcnZXamthN2dVcWpWNmFuU2VxclhKZVlWUTk1dVp2QUFmbVR0cTU3Rm0ydm1aVVZjaWdRWkNZaE05aXk1K0U4S05FZVBBYUdHNW5qdTRQRUZuXC92TXIrV293TklzMVgxdDBIQTd6TUlVUHB4WEIyaEpzSkFvd3hWdGtEZGlDNmZUd0k5NEVBeVlOajdMWHdSbkxSc05EenJjR0t3ckFENDJKbTlHNGhhZXF2N0crOVwvK2ZHRHJPZXJyQXVQb1Z2VHI1aEVPUmNxQ0t0TWRROWZRNW5aTkFEU25BYTRwSWhZNzM5dkFpQXE2dHFFdmM9In0")
+                        //.addHeader("Cookie", )
                         .build();
-                //.post(formBody)
                 Response response;
                 try {
                     response = chain.proceed(request);
@@ -77,12 +148,9 @@ public enum NetworkService implements NetworkInterface {
             }
         });
 
-        return  okHttpClientBuilder.build();
-    }
-
-    private Request.Builder buildRequest(URL url) {
-        return new Request.Builder()
-                .url(url);
+        return  okHttpClientBuilder
+                .cookieJar(cookieJar)
+                .build();
     }
 
     private Request.Builder buildRequest(URL url, String credential) {
@@ -111,6 +179,17 @@ public enum NetworkService implements NetworkInterface {
 
     private String getData(Request request) {
         OkHttpClient client = buildClient();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getData_login(Request request,String login,String password) {
+        OkHttpClient client = buildClient_login(login, password);
         try {
             Response response = client.newCall(request).execute();
             return response.body().string();
@@ -154,6 +233,16 @@ public enum NetworkService implements NetworkInterface {
         Log.d("NetworkService","built search url: " + url.toString());
         Request request = buildRequest(url).build();
         return getData(request);
+    }
+
+    public String search_login(String login, String password, String urle) {
+        Uri.Builder uri = Uri.parse(urle)
+                .buildUpon();
+        Uri uril  = uri.build();
+        URL url = buildURL(uril);
+        Log.d("NetworkService","built search url: " + url.toString());
+        Request request = buildRequest(url).build();
+        return getData_login(request, login, password);
     }
 
 }

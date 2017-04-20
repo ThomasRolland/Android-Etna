@@ -29,6 +29,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
-
+    compile "com.squareup.okhttp3:okhttp-urlconnection:3.0.0-RC1"
     testCompile 'junit:junit:4.12'
 }
