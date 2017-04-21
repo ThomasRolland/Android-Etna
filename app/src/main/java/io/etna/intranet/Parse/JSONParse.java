@@ -120,7 +120,7 @@ public class JSONParse {
                 JSONObject object3 = hits.getJSONObject(i);
                 if (object3.getString("id").equals(idPrincipal)) {
                     JSONArray messages = object3.getJSONArray("messages");
-                    for(int j = 1; j < messages.length(); j++) //On elimine le premier message
+                    for(int j = 0; j < messages.length(); j++) //On elimine le premier message
                     {
                         JSONObject Final_Object = new JSONObject();
                         JSONObject onemessage = messages.getJSONObject(j);

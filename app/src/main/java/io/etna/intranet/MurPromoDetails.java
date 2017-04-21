@@ -45,23 +45,13 @@ public class MurPromoDetails extends Fragment {
 
         /* Récupere les informations (id) de la vue précédente */
         idPrincipal = getArguments().getString("idPrincipal");
-        String idPrincipal = getArguments().getString("idPrincipal");
         String titrePrincipal = getArguments().getString("titrePrincipal");
-        String createurPrincipal= getArguments().getString("createurPrincipal");
-        String dateCreationPrincipal = getArguments().getString("dateCreationPrincipal");
-        String messagePrincipal = getArguments().getString("messagePrincipal");
+
 
         /* Modifie le contenu du message principal */
         TextView titreDiscussOnView = (TextView) getActivity().findViewById(R.id.titre_discuss);
-        TextView titrePrincipalOnView = (TextView) getActivity().findViewById(R.id.titrePrincipal);
-        TextView createurPrincipalOnView = (TextView) getActivity().findViewById(R.id.createurPrincipal);
-        TextView dateCreationPrincipalOnView = (TextView) getActivity().findViewById(R.id.dateCreationPrincipal);
-        TextView messagePrincipalOnView = (TextView) getActivity().findViewById(R.id.messagePrincipal);
         titreDiscussOnView.setText(titrePrincipal);
-        titrePrincipalOnView.setText(titrePrincipal);
-        createurPrincipalOnView.setText(createurPrincipal);
-        dateCreationPrincipalOnView.setText(dateCreationPrincipal);
-        messagePrincipalOnView.setText(messagePrincipal);
+
 
         list = new ArrayList<>();
         /**

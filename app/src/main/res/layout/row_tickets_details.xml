@@ -13,6 +13,7 @@
         android:background="@drawable/rectangle"
         android:backgroundTint="@color/bg_grey"
         android:orientation="vertical"
+        android:paddingRight="10dp"
         android:weightSum="1">
 
         <LinearLayout
@@ -32,6 +33,14 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/dateCreation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Créé le : 23/12/16"
+                android:textAlignment="textStart"
+                android:textStyle="italic" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -42,21 +51,12 @@
             android:paddingTop="10dp">
 
             <TextView
-                android:id="@+id/dateCreation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Créé le : 23/12/16"
-                android:textAlignment="textStart"
-                android:textStyle="italic" />
-
-            <TextView
                 android:id="@+id/authorMail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@android:string/defaultVoiceMailAlphaTag"
-                android:textAlignment="textEnd" />
+                android:textAlignment="textStart" />
 
         </LinearLayout>
 
@@ -73,7 +73,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Message" />
+                android:autoLink="web"
+                android:text="Message"
+                android:textColor="@android:color/black"
+                android:textColorLink="@color/accent_material_dark_1" />
 
         </LinearLayout>
 

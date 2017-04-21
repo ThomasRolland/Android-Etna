@@ -8,43 +8,41 @@ import com.google.zxing.common.StringUtils;
 
 public class NoteModel {
 
-    String UVnom;
+    static String UVnom;
     String UVdescription;
-    String projet;
+    static String projet;
     String commentaire;
-    String note;
+    static String note;
     String noteMin;
     String noteMax;
     String noteMoy;
     Boolean validation;
 
     public NoteModel(String UVnom, String UVdescription, String projet, String commentaire, String note, String noteMin, String noteMax, String noteMoy, Boolean validation) {
-        String temp = new String();
-
         this.UVnom = UVnom;
         this.UVdescription = UVdescription;
         this.projet = projet;
         this.commentaire = commentaire;
-        this.note = note + "/20";
+        this.note = note;
         this.noteMin = noteMin;
         this.noteMax = noteMax;
         this.noteMoy = noteMoy;
         this.validation = validation;
     }
 
-    public String getUVNom() {
+    public static String getUVNom() {
         return UVnom;
     }
     public String getUVDescription() {
         return UVdescription;
     }
-    public String getProjet() {
+    public static String getProjet() {
         return projet;
     }
     public String getCommentaire() {
         return commentaire;
     }
-    public String getNote() {
+    public static String getNote() {
         return roundNote(note);
 
     }
@@ -61,13 +59,13 @@ public class NoteModel {
     }
     public Boolean getValidation() { return validation; }
 
-    public String roundNote(String note) {
+    public static String roundNote(String note) {
         if (note.length() > 4) {
-            String temp = noteMax.substring(0, 4);
-            return temp;
+            String temp = note.substring(0, 4);
+            return temp + "/20";
         }
         else {
-            return note;
+            return note + "/20";
         }
     }
 }

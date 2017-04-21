@@ -66,14 +66,8 @@ public class MurPromo extends Fragment {
                 Bundle bundle = new Bundle();
                 String idPrincipal = list.get(position).getId();
                 String titrePrincipal = list.get(position).getTitre();
-                String createurPrincipal= list.get(position).getCreateur();
-                String dateCreationPrincipal = list.get(position).getDateCreation();
-                String messagePrincipal = list.get(position).getMessage();
                 bundle.putString("idPrincipal",idPrincipal);
                 bundle.putString("titrePrincipal",titrePrincipal);
-                bundle.putString("createurPrincipal",createurPrincipal);
-                bundle.putString("dateCreationPrincipal",dateCreationPrincipal);
-                bundle.putString("messagePrincipal",messagePrincipal);
 
                 /*Change de fragment*/
                 MurPromoDetails fragment2 = new MurPromoDetails();

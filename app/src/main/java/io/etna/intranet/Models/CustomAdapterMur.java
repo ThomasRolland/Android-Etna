@@ -1,6 +1,7 @@
 package io.etna.intranet.Models;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +42,6 @@ public class CustomAdapterMur extends ArrayAdapter<MurModel> {
             viewHolder.titre = (TextView) convertView.findViewById(R.id.titre);
             viewHolder.dateCreation = (TextView) convertView.findViewById(R.id.dateCreation);
             viewHolder.message = (TextView) convertView.findViewById(R.id.message);
-            //viewHolder.photo = (ImageView) convertView.findViewById(R.id.photo);
 
             convertView.setTag(viewHolder);
         }

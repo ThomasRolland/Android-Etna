@@ -9,9 +9,11 @@
         android:id="@+id/id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
         android:background="@drawable/rectangle_grey"
         android:backgroundTint="@color/bg_grey"
         android:orientation="vertical"
+        android:paddingRight="20dp"
         android:weightSum="1">
 
         <LinearLayout
@@ -49,9 +51,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="0.08"
+            android:autoLink="all"
+            android:linksClickable="true"
             android:paddingLeft="20dp"
             android:text="Message"
-            android:textColor="@color/Black_Material" />
+            android:textColor="@color/Black_Material"
+            android:textColorLink="@color/accent_material_dark_1" />
 
     </LinearLayout>
 
