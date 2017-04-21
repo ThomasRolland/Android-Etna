@@ -23,6 +23,9 @@ import static io.etna.intranet.R.id.b1;
 public class CustomAdapterNote extends ArrayAdapter<NoteModel> {
 
     Button button;
+    public String share_projet;
+    public String share_note;
+    public String share_uv;
 
     //NoteModels est la liste des models à afficher
     public CustomAdapterNote(Context context, List<NoteModel> NoteModels) {
@@ -55,6 +58,9 @@ public class CustomAdapterNote extends ArrayAdapter<NoteModel> {
         //getItem(position) va récupérer l'item [position] de la List<NoteModel> NoteModels
         NoteModel NoteModel = getItem(position);
 
+        share_uv = NoteModel.getUVNom();
+        share_projet = NoteModel.getProjet();
+        share_uv = NoteModel.getNote();
         viewHolder.UVnom.setText(NoteModel.getUVNom());
         viewHolder.UVdescription.setText(NoteModel.getUVDescription());
         viewHolder.projet.setText(NoteModel.getProjet());
@@ -74,7 +80,7 @@ public class CustomAdapterNote extends ArrayAdapter<NoteModel> {
         public void onClick(View v) {
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
-            String shareBody = "Voici ma note du projet " + NoteModel.getProjet() + " ("+NoteModel.getUVNom() + ") : " + NoteModel.getNote() + ". @ETNA";
+            String shareBody = "Voici ma note du projet " + share_projet + " ("+ share_uv + ") : " + share_note + ". @ETNA";
             sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Partager ma note #ETNA");
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
             getContext().startActivity(Intent.createChooser(sharingIntent, "Partager via"));

@@ -69,7 +69,7 @@ public enum NetworkService implements NetworkInterface {
      * headers quickly and efficiently.
      * @return OkHttpClient
      */
-    private OkHttpClient buildClient_login(final String login, final String password) {
+    OkHttpClient buildClient_login(final String login, final String password) {
         if (okHttpClient != null) return okHttpClient;
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)

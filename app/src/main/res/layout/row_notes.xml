@@ -10,7 +10,10 @@
         android:background="@drawable/rectangle"
         android:backgroundTint="@color/bg_grey"
         android:orientation="vertical"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +66,7 @@
 
             <TextView
                 android:id="@+id/projet"
-                android:layout_width="254dp"
+                android:layout_width="243dp"
                 android:layout_height="wrap_content"
                 android:text="Cardboard Pulley"
                 android:textColor="@color/blue_etna"
@@ -75,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingRight="10dp"
-                android:text="16/20"
+                android:text="17.8/20"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/Black_Material"
                 android:textSize="16sp"

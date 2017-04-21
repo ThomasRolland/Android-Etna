@@ -8,11 +8,11 @@ import com.google.zxing.common.StringUtils;
 
 public class NoteModel {
 
-    static String UVnom;
+    String UVnom;
     String UVdescription;
-    static String projet;
+    String projet;
     String commentaire;
-    static String note;
+    String note;
     String noteMin;
     String noteMax;
     String noteMoy;
@@ -30,19 +30,19 @@ public class NoteModel {
         this.validation = validation;
     }
 
-    public static String getUVNom() {
+    public String getUVNom() {
         return UVnom;
     }
     public String getUVDescription() {
         return UVdescription;
     }
-    public static String getProjet() {
+    public String getProjet() {
         return projet;
     }
     public String getCommentaire() {
         return commentaire;
     }
-    public static String getNote() {
+    public String getNote() {
         return roundNote(note);
 
     }
