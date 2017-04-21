@@ -139,11 +139,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isEmailValid(String email) {
-        if (email.contains("_")
-                && email.length() >= 3)
-            return true;
-        else
-            return false;
+        return email.contains("_")
+                && email.length() >= 3;
     }
 
     private boolean isPasswordValid(String password) {

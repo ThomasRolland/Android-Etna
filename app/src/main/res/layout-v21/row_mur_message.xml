@@ -37,6 +37,7 @@
             android:paddingTop="10dp">
 
             <ImageView
+                android:contentDescription="Icon launcher"
                 android:id="@+id/photo"
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"

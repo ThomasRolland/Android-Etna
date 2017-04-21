@@ -44,7 +44,7 @@ public class CustomAdapterBadge extends ArrayAdapter<BadgeModel> {
 
 
             Picasso picasso = new Picasso.Builder(getContext()).downloader(new CookieImageDownloader(getContext())).build();
-            picasso.with(getContext()).load(badge.getImageURL()).into(image);
+            Picasso.with(getContext()).load(badge.getImageURL()).into(image);
         {
             Log.d("Impossible de récuperer l'image : ", badge.getImageURL());
         }

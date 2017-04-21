@@ -13,6 +13,7 @@
 
     <!-- Login progress -->
     <ImageView
+        android:contentDescription="Logo Etna"
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -65,7 +66,8 @@
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    tools:ignore="Deprecated" />
 
             </android.support.design.widget.TextInputLayout>
 

@@ -102,6 +102,7 @@ public class Notes extends Fragment {
                 e.printStackTrace();
             }
             for(int i = 0; i < get_data.length(); i++) {
+
                 JSONObject My_data = null;
                 try {
                     My_data = get_data.getJSONObject(i);
@@ -109,6 +110,7 @@ public class Notes extends Fragment {
                     e.printStackTrace();
                 }
                 try {
+                    Log.d("coucou", My_data.getString("UVNom"));
                     NoteModel model = new NoteModel(My_data.getString("UVNom"), My_data.getString("UVDescription"), My_data.getString("projet"), My_data.getString("commentaire"), My_data.getString("note"), My_data.getString("noteMin"), My_data.getString("noteMax"), My_data.getString("noteMoy"), true);
                     list.add(model);
                 } catch (JSONException e) {

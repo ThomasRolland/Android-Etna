@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.etna.intranet.Curl.CheckConnection;
 import io.etna.intranet.Curl.NetworkService;
@@ -155,7 +156,7 @@ public class Planning extends Fragment {
         cal.add(Calendar.MONTH, 1);
         Date endDate = cal.getTime();
 
-        formater = new SimpleDateFormat("yyyy-MM-dd");
+        formater = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String startDatestr = formater.format(startDate);
         String endDatestr = formater.format(endDate);
 

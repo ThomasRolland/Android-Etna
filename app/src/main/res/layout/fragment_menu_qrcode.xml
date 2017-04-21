@@ -18,6 +18,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:contentDescription="Icon launcher"
                 android:id="@+id/qrcode"
                 android:layout_width="match_parent"
                 android:layout_height="264dp"
@@ -32,6 +33,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:contentDescription="Icon launcher"
                     android:id="@+id/imageView2"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"

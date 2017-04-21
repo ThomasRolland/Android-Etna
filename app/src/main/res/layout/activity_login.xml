@@ -13,6 +13,7 @@
 
     <!-- Login progress -->
     <ImageView
+        android:contentDescription="Logo Etna"
         android:id="@+id/imageView3"
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -64,8 +65,7 @@
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -78,7 +78,8 @@
                 android:backgroundTint="@color/accent_material_dark_1"
                 android:text="Connexion"
                 android:textColor="@android:color/white"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="UnusedAttribute" />
 
         </LinearLayout>
     </ScrollView>
