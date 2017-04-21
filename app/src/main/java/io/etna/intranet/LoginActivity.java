@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.etna.intranet.Curl.CheckConnection;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Storage.TinyDB;
 
@@ -223,7 +224,7 @@ public class LoginActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
 
             try {
-                if (checkConnection(getApplicationContext())) {
+                if (CheckConnection.execute(getApplicationContext())) {
                     JSONObject object = searchCall(mEmail, mPassword);
                     //Success ou pas, on sauvegarde son login pour qu'il se recconecte facilement ultérieurement
                     TinyDB tinydb = new TinyDB(getApplicationContext());
@@ -276,8 +277,6 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
-    public static boolean checkConnection(Context context) {
-        return  ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
-    }
+
 }
 

@@ -42,7 +42,7 @@ public class Activites extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Activités");
 
-        if (CheckConnection.execute(getContext()) == false) {
+        if (!CheckConnection.execute(getContext())) {
             Intent myIntent = new Intent(getContext(), LoginActivity.class);
             startActivity(myIntent);
             Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();

@@ -46,7 +46,7 @@ public class Badges extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mes Badges");
-        if (CheckConnection.execute(getContext()) == false) {
+        if (!CheckConnection.execute(getContext())) {
             Intent myIntent = new Intent(getContext(), LoginActivity.class);
             startActivity(myIntent);
             Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();

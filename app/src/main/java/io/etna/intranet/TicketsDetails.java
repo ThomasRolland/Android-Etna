@@ -49,7 +49,7 @@ public class TicketsDetails extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mes Tickets");
 
-        if (CheckConnection.execute(getContext()) == false) {
+        if (!CheckConnection.execute(getContext())) {
             Intent myIntent = new Intent(getContext(), LoginActivity.class);
             startActivity(myIntent);
             Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();
