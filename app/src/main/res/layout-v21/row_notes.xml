@@ -60,11 +60,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingLeft="25dp"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/projet"
-                android:layout_width="259dp"
+                android:layout_width="246dp"
                 android:layout_height="wrap_content"
                 android:text="Cardboard Pulley"
                 android:textColor="@color/blue_etna"
@@ -73,15 +74,15 @@
 
             <TextView
                 android:id="@+id/note"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:paddingRight="10dp"
-                android:text="16/20"
+                android:text="17.8/20"
                 android:textAlignment="textEnd"
                 android:textColor="@color/Black_Material"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_weight="0.67" />
 
         </LinearLayout>
 
