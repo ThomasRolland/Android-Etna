@@ -3,7 +3,9 @@ package io.etna.intranet;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -215,41 +217,43 @@ public class LoginActivity extends AppCompatActivity {
             mPassword = password;
         }
 
+
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
             try {
-                JSONObject object = searchCall(mEmail, mPassword);
-                //Success ou pas, on sauvegarde son login pour qu'il se recconecte facilement ultérieurement
-                TinyDB tinydb = new TinyDB(getApplicationContext());
+                if (checkConnection(getApplicationContext())) {
+                    JSONObject object = searchCall(mEmail, mPassword);
+                    //Success ou pas, on sauvegarde son login pour qu'il se recconecte facilement ultérieurement
+                    TinyDB tinydb = new TinyDB(getApplicationContext());
 
-                Log.d("object: ", object.toString());
+                    Log.d("object: ", object.toString());
 
-                //On verifie si l'auth a réussi :
-                if (object.has("id") && !object.isNull("id")) {
-                    tinydb.putString("loginStored", object.getString("login"));
-                    //Login succes
-                    tinydb.putString("userName", object.getString("login"));
-                    JSONObject data_user = searchCall_user(object.getString("id"));
-                    tinydb.putString("userId", data_user.getString("id"));
-                    tinydb.putString("userFirstname", data_user.getString("firstname"));
-                    tinydb.putString("userLastname", data_user.getString("lastname"));
-                    JSONArray data_promo = searchCall_promo();
-                    tinydb.putString("userIdPromo", data_promo.getJSONObject(0).getString("id"));
-                    tinydb.putString("userPromoName", data_promo.getJSONObject(0).getString("wall_name"));
+                    //On verifie si l'auth a réussi :
+                    if (object.has("id") && !object.isNull("id")) {
+                        tinydb.putString("loginStored", object.getString("login"));
+                        //Login succes
+                        tinydb.putString("userName", object.getString("login"));
+                        JSONObject data_user = searchCall_user(object.getString("id"));
+                        tinydb.putString("userId", data_user.getString("id"));
+                        tinydb.putString("userFirstname", data_user.getString("firstname"));
+                        tinydb.putString("userLastname", data_user.getString("lastname"));
+                        JSONArray data_promo = searchCall_promo();
+                        tinydb.putString("userIdPromo", data_promo.getJSONObject(0).getString("id"));
+                        tinydb.putString("userPromoName", data_promo.getJSONObject(0).getString("wall_name"));
 
-                    return true;
-                }else
-                {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                else {
                     return false;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
-            // TODO: register the new account here.
             return true;
         }
 
@@ -261,7 +265,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(myIntent);
             } else {
-                mPasswordView.setError("Echec de l'authentification.");
+                mPasswordView.setError("Echec de l'authentification. (Vérifiez la connexion et/ou les identifiants)");
                 mPasswordView.requestFocus();
             }
         }
@@ -272,6 +276,8 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
-
+    public static boolean checkConnection(Context context) {
+        return  ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
+    }
 }
 

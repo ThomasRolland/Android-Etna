@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +14,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.etna.intranet.Curl.CheckConnection;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.CustomAdapterMur;
 import io.etna.intranet.Models.MurModel;
@@ -45,40 +49,47 @@ public class MurPromo extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mur Promotion");
 
+        if (CheckConnection.execute(getContext()) == false) {
+            Intent myIntent = new Intent(getContext(), LoginActivity.class);
+            startActivity(myIntent);
+            Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();
+        }
+        else {
 
-        list = new ArrayList<>();
-        /**
-         * Binding that List to Adapter
-         */
-        adapter = new CustomAdapterMur(getContext(), list);
+            list = new ArrayList<>();
+            /**
+             * Binding that List to Adapter
+             */
+            adapter = new CustomAdapterMur(getContext(), list);
 
-        /**
-         * Getting List and Setting List Adapter
-         */
-        listView = (ListView) getActivity().findViewById(R.id.flux);
-        listView.setAdapter(adapter);
-        new MurPromo.GetDataTask().execute();
+            /**
+             * Getting List and Setting List Adapter
+             */
+            listView = (ListView) getActivity().findViewById(R.id.flux);
+            listView.setAdapter(adapter);
+            new MurPromo.GetDataTask().execute();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 /*Sauvegarde les values a passer*/
-                Bundle bundle = new Bundle();
-                String idPrincipal = list.get(position).getId();
-                String titrePrincipal = list.get(position).getTitre();
-                bundle.putString("idPrincipal",idPrincipal);
-                bundle.putString("titrePrincipal",titrePrincipal);
+                    Bundle bundle = new Bundle();
+                    String idPrincipal = list.get(position).getId();
+                    String titrePrincipal = list.get(position).getTitre();
+                    bundle.putString("idPrincipal", idPrincipal);
+                    bundle.putString("titrePrincipal", titrePrincipal);
 
                 /*Change de fragment*/
-                MurPromoDetails fragment2 = new MurPromoDetails();
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragment2.setArguments(bundle);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.replace(R.id.content_frame, fragment2);
-                fragmentTransaction.commit();
-            }
-        });
+                    MurPromoDetails fragment2 = new MurPromoDetails();
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragment2.setArguments(bundle);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.replace(R.id.content_frame, fragment2);
+                    fragmentTransaction.commit();
+                }
+            });
+        }
     }
 
     class GetDataTask extends AsyncTask<Void, Void, Void> {

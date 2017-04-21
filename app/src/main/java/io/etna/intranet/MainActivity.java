@@ -1,5 +1,8 @@
 package io.etna.intranet;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity
         m_promo.setText(tinydb.getString("userPromoName"));
         TextView m_nom = (TextView)hView.findViewById(R.id.m_nom);
         m_nom.setText(tinydb.getString("userFirstname")+" "+tinydb.getString("userLastname"));
+
     }
 
     @Override
@@ -135,6 +140,5 @@ public class MainActivity extends AppCompatActivity
         //make this method blank
         return true;
     }
-
 
 }

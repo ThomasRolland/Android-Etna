@@ -4,8 +4,10 @@ package io.etna.intranet.Curl;
  * Created by thomasrolland on 13/04/2017.
  */
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;

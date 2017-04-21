@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,11 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.etna.intranet.Curl.CheckConnection;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.CustomAdapterMurDetails;
 import io.etna.intranet.Models.MurDetailsModel;
@@ -43,28 +48,36 @@ public class MurPromoDetails extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Discussion");
 
+        if (CheckConnection.execute(getContext()) == false) {
+            Intent myIntent = new Intent(getContext(), LoginActivity.class);
+            startActivity(myIntent);
+            Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();
+        }
+        else {
+
         /* Récupere les informations (id) de la vue précédente */
-        idPrincipal = getArguments().getString("idPrincipal");
-        String titrePrincipal = getArguments().getString("titrePrincipal");
+            idPrincipal = getArguments().getString("idPrincipal");
+            String titrePrincipal = getArguments().getString("titrePrincipal");
 
 
         /* Modifie le contenu du message principal */
-        TextView titreDiscussOnView = (TextView) getActivity().findViewById(R.id.titre_discuss);
-        titreDiscussOnView.setText(titrePrincipal);
+            TextView titreDiscussOnView = (TextView) getActivity().findViewById(R.id.titre_discuss);
+            titreDiscussOnView.setText(titrePrincipal);
 
 
-        list = new ArrayList<>();
-        /**
-         * Binding that List to Adapter
-         */
-        adapter = new CustomAdapterMurDetails(getContext(), list);
+            list = new ArrayList<>();
+            /**
+             * Binding that List to Adapter
+             */
+            adapter = new CustomAdapterMurDetails(getContext(), list);
 
-        /**
-         * Getting List and Setting List Adapter
-         */
-        listView = (ListView) getActivity().findViewById(R.id.flux);
-        listView.setAdapter(adapter);
-        new MurPromoDetails.GetDataTask().execute();
+            /**
+             * Getting List and Setting List Adapter
+             */
+            listView = (ListView) getActivity().findViewById(R.id.flux);
+            listView.setAdapter(adapter);
+            new MurPromoDetails.GetDataTask().execute();
+        }
     }
 
     class GetDataTask extends AsyncTask<Void, Void, Void> {

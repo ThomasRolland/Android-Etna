@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import io.etna.intranet.Curl.CheckConnection;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.CustomAdapterEvent;
 import io.etna.intranet.Models.EventModel;
@@ -46,18 +50,26 @@ public class Planning extends Fragment {
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Mon Planning");
 
-        list = new ArrayList<>();
-        /**
-         * Binding that List to Adapter
-         */
-        adapter = new CustomAdapterEvent(getContext(), list);
+        if (CheckConnection.execute(getContext()) == false) {
+            Intent myIntent = new Intent(getContext(), LoginActivity.class);
+            startActivity(myIntent);
+            Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();
+        }
+        else {
 
-        /**
-         * Getting List and Setting List Adapter
-         */
-        listView = (ListView) getActivity().findViewById(R.id.flux);
-        listView.setAdapter(adapter);
-        new Planning.GetDataTask().execute();
+            list = new ArrayList<>();
+            /**
+             * Binding that List to Adapter
+             */
+            adapter = new CustomAdapterEvent(getContext(), list);
+
+            /**
+             * Getting List and Setting List Adapter
+             */
+            listView = (ListView) getActivity().findViewById(R.id.flux);
+            listView.setAdapter(adapter);
+            new Planning.GetDataTask().execute();
+        }
     }
 
 

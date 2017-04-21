@@ -1,5 +1,6 @@
 package io.etna.intranet;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+
+import io.etna.intranet.Curl.CheckConnection;
 import io.etna.intranet.Curl.NetworkService;
 import io.etna.intranet.Models.ActiviteModel;
 import io.etna.intranet.Models.CustomAdapterActivite;
@@ -38,18 +42,26 @@ public class Activites extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Activités");
 
-        list = new ArrayList<>();
-        /**
-         * Binding that List to Adapter
-         */
-        adapter = new CustomAdapterActivite(getContext(), list);
+        if (CheckConnection.execute(getContext()) == false) {
+            Intent myIntent = new Intent(getContext(), LoginActivity.class);
+            startActivity(myIntent);
+            Toast.makeText(getContext(), "Plus de connexion Internet, vérifiez vos reglages.", Toast.LENGTH_SHORT).show();
+        }
+        else {
 
-        /**
-         * Getting List and Setting List Adapter
-         */
-        listView = (ListView) getActivity().findViewById(R.id.flux);
-        listView.setAdapter(adapter);
-        new GetDataTask().execute();
+            list = new ArrayList<>();
+            /**
+             * Binding that List to Adapter
+             */
+            adapter = new CustomAdapterActivite(getContext(), list);
+
+            /**
+             * Getting List and Setting List Adapter
+             */
+            listView = (ListView) getActivity().findViewById(R.id.flux);
+            listView.setAdapter(adapter);
+            new GetDataTask().execute();
+        }
     }
 
     class GetDataTask extends AsyncTask<Void, Void, Void> {
@@ -134,5 +146,8 @@ public class Activites extends Fragment {
         final String data = NetworkService.INSTANCE.search(get, get_data, "https://modules-api.etna-alternance.net/", path);
         return new JSONObject(data);
     }
+
+
+
 }
 
